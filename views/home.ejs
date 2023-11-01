@@ -1,14 +1,21 @@
 <%-include('partials/head')%>
 
-<div>
+<div class="authOptions">
+    <% if(isAuthenticated) {%>
+        <a href="/logout">Logout</a><br>
+    <% }else {%>
+        <a href="/login">Login</a><br>
+        <a href="/register">Register</a><br>
+    <% } %>
+    
+</div>
+    
     <h1>BACKLOGS</h1>
+<div class="botoes">
     <a href="/game">Games backlog</a><br>
     <a href="/book">Books backlog</a><br>
     <a href="/movie">Movies backlog</a><br>
     <a href="/custom">Custom backlog</a><br>
 </div><br><br><br>
-    <a href="/login">Login</a><br>
-    <a href="/logout">Logout</a><br>
-    <a href="/register">Register</a><br>
 
 <%-include('partials/footer')%>

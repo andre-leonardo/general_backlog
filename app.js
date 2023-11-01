@@ -8,6 +8,7 @@ const passport = require('passport')
 const localPassport = require('passport-local')
 const expressSession = require('express-session')
 const User = require('./models/user')
+const { name } = require("ejs")
 
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))
@@ -18,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(expressSession({
     secret: "segredo",
     resave: false,
-    saveUninitiaded: false
+    saveUninitialized : false
 }))
 
 app.use(passport.initialize())
@@ -38,7 +39,7 @@ const isLoggedIn = (req, res, next) => {
 } 
 
 app.get('/', (req, res) => {
-    res.render('home')
+    res.render('home', {isAuthenticated: req.isAuthenticated()})
 })
 
 
@@ -75,9 +76,37 @@ app.get("/logout", (req, res) => {
     res.redirect('/')
 })
 
+//1d034147e4ee8574f39f3ecd2ecbbafc6c792276
 
+let resposta = {}
 app.get('/game', isLoggedIn,(req, res) => {
-    res.render('game')
+    let showResult = false;
+    let resposta = null;
+    res.render('game', {showResult, resposta})
+})
+
+app.post('/game', isLoggedIn,(req, res) => {
+    let showResult = true;
+    let {name, doNotSave}  = req.body
+    console.log(name)
+    const options = {
+        url: 'http://www.giantbomb.com/api/search?api_key=1d034147e4ee8574f39f3ecd2ecbbafc6c792276&format=json&query=' + name + '&resources=game',
+        headers: {
+          'User-Agent': 'I\'m Doing a college work, it\'s a site of backlogs, where you can make backlogs of various things, and games is one of them, that is why I decided to use this API',
+        }
+    };
+    request(options,
+    (error, response, body) => {
+        if(!error && response.statusCode == 200){
+            resposta = JSON.parse(body)
+            //console.log(body)
+            if(doNotSave == 'false'){
+                //salvar();
+            }
+        }
+        res.render('game', {showResult, resposta})
+    })
+    
 })
 app.get('/book', isLoggedIn,(req, res) => {
     res.render('book')
@@ -88,6 +117,22 @@ app.get('/movie', isLoggedIn,(req, res) => {
 app.get('/custom', isLoggedIn,(req, res) => {
     res.render('custom')
 })
+app.get('/busca', isLoggedIn,(req, res) =>{
+    let {nome, doNotSave}  = req.body
+    request('http://www.giantbomb.com/api/search?api_key=1d034147e4ee8574f39f3ecd2ecbbafc6c792276&format=json&query='+ name +'&resources=game')
+    res.render('busca')
+})
+
+async function salvar() {
+    let city_name = resposta.results.city_name;
+    let temp = resposta.results.temp;
+    let max = resposta.results.forecast[0].max;
+    let min = resposta.results.forecast[0].min;
+    let description = resposta.results.description;
+    //console.log(city_name, temp, max, min, description)
+    const novoTempo = new Tempo({city_name, temp, max, min, description});
+    await novoTempo.save()
+}
 
 
 app.listen(3000, () => console.log("Servidor na porta 3000"))
