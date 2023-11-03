@@ -13,6 +13,9 @@ const backlogSchema = new mongoose.Schema({
     },
     consumed: {
         type: Number
+    },
+    released: {
+        type: String
     }
 })
 

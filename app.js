@@ -9,6 +9,7 @@ const localPassport = require('passport-local')
 const expressSession = require('express-session')
 const User = require('./models/user')
 const { name } = require("ejs")
+const Backlog = require("./models/backlogs")
 
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))
@@ -87,7 +88,7 @@ app.get('/game', isLoggedIn,(req, res) => {
 
 app.post('/game', isLoggedIn,(req, res) => {
     let showResult = true;
-    let {name, doNotSave}  = req.body
+    let {name}  = req.body
     console.log(name)
     const options = {
         url: 'http://www.giantbomb.com/api/search?api_key=1d034147e4ee8574f39f3ecd2ecbbafc6c792276&format=json&query=' + name + '&resources=game',
@@ -95,19 +96,30 @@ app.post('/game', isLoggedIn,(req, res) => {
           'User-Agent': 'I\'m Doing a college work, it\'s a site of backlogs, where you can make backlogs of various things, and games is one of them, that is why I decided to use this API',
         }
     };
-    request(options,
-    (error, response, body) => {
+    request(options, (error, response, body) => {
         if(!error && response.statusCode == 200){
             resposta = JSON.parse(body)
-            //console.log(body)
-            if(doNotSave == 'false'){
-                //salvar();
-            }
         }
         res.render('game', {showResult, resposta})
     })
     
 })
+app.post('/game/add', isLoggedIn, async(req, res) => {
+    const { itemName, itemImage, doNotSave } = req.body
+    if(doNotSave == 'false'){
+        console.log(itemName)
+        console.log(req.body)
+        const novoLog = new Backlog({ name: itemName, cover: itemImage })
+        try {
+            await novoLog.save()
+            console.log('Log saved:', novoLog)
+        } catch (err) {
+            console.error('Erro:', err)
+        }
+    }
+    res.redirect('/game')
+})
+
 app.get('/book', isLoggedIn,(req, res) => {
     res.render('book')
 })
@@ -122,17 +134,6 @@ app.get('/busca', isLoggedIn,(req, res) =>{
     request('http://www.giantbomb.com/api/search?api_key=1d034147e4ee8574f39f3ecd2ecbbafc6c792276&format=json&query='+ name +'&resources=game')
     res.render('busca')
 })
-
-async function salvar() {
-    let city_name = resposta.results.city_name;
-    let temp = resposta.results.temp;
-    let max = resposta.results.forecast[0].max;
-    let min = resposta.results.forecast[0].min;
-    let description = resposta.results.description;
-    //console.log(city_name, temp, max, min, description)
-    const novoTempo = new Tempo({city_name, temp, max, min, description});
-    await novoTempo.save()
-}
 
 
 app.listen(3000, () => console.log("Servidor na porta 3000"))

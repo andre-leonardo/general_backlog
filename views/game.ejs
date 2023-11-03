@@ -3,14 +3,22 @@
     <h1>GAME BACKLOG</h1>
     <form action="/game" method="post">
         <input type="text" name="name" placeholder="name">
-        <input type="text" hidden value="false" name="doNotSave">
+        <input type="text" hidden value="true" name="doNotSave">
         <br>
         <button>Search</button>
     </form>
     <% if(resposta!=null){ %>
         <% for(result of resposta.results) {%>
-            <p><%= result.name%></p>
+            <form action="/game/add" method="post">
+                <input type="text" hidden value="<%= result.name %>" name="itemName">
+                <input type="text" hidden value="<%= result.image.original_url %>" name="itemImage">
+                <input type="text" hidden value="false" name="doNotSave">
+                <p><%= result.name%></p>
+                <img src="<%= result.image.original_url %>" alt="">
+                <button>Add</button>
+            </form>
         <%}; %>
         
     <% } %>
+
 <%-include('partials/footer')%>
