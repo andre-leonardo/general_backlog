@@ -11,11 +11,18 @@ const backlogSchema = new mongoose.Schema({
     description: {
         type: String
     },
-    consumed: {
+    finishStatus: {
         type: Number
     },
     released: {
         type: String
+    },
+    type:{
+        type: String
+    },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     }
 })
 
