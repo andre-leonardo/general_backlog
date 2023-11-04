@@ -17,7 +17,7 @@ const backlogSchema = new mongoose.Schema({
     released: {
         type: String
     },
-    type:{
+    type: {
         type: String
     },
     user: {

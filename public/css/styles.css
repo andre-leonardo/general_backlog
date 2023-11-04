@@ -28,6 +28,14 @@ img{
     width: 200px; 
     height: 220px; 
 }
+.detail{
+    width: 400px; 
+    height: 440px; 
+}
+.detailsgame{
+    float: right;
+    text-align: left;
+}
 
 table{
     border: 5px solid;

@@ -109,13 +109,13 @@ app.post('/game', isLoggedIn, async(req, res) => {
     
 })
 app.post('/game/add', isLoggedIn, async(req, res) => {
-    const { itemName, itemImage, doNotSave } = req.body
+    const { itemName, itemImage, itemRelease, doNotSave } = req.body
     const user = req.user
     if(doNotSave == 'false'){
         // console.log(itemName)
         // console.log(req.body)
         const novoLog = new Backlog({ name: itemName, cover: itemImage, 
-            finishStatus: 1,type: "game", user: user._id})
+            finishStatus: 1,type: "game", released: itemRelease, user: user._id})
         try {
             await novoLog.save()
             console.log('Log saved:', novoLog)
@@ -123,6 +123,18 @@ app.post('/game/add', isLoggedIn, async(req, res) => {
             console.error('Erro:', err)
         }
     }
+    res.redirect('/game')
+})
+
+app.get('/gamedetail/:id', isLoggedIn, async(req, res) => {
+    const id = req.params.id
+    const backlog = await Backlog.findById(id)
+    res.render('gamedetail', {backlog})
+})
+
+app.delete('/delete/:id', async (req, res) => {
+    const id = req.params.id
+    await Backlog.findByIdAndDelete(id)
     res.redirect('/game')
 })
 

@@ -1,4 +1,18 @@
 <%-include('partials/head')%>
-
+    <img class="detail" src="<%= backlog.cover  %>" alt="">
+    <div class="detailsgame">
+        <h2><%= backlog.name %></h2>
+        <p><%= backlog.released  %></p>
+        <% if(backlog.finishStatus == 1){ %>
+            <p>Unstarted</p>
+        <% } else if(backlog.finishStatus == 2){ %>
+            <p>In progress</p>
+        <% } else{ %>
+            <p>Finished</p>
+        <% } %>
+        <form action="/delete/<%= backlog.id %>?_method=DELETE" method="post">
+            <button>Remove from your backlog</button>
+        </form>
+    </div>
 
 <%-include('partials/footer')%>
