@@ -112,13 +112,10 @@ app.post('/game/add', isLoggedIn, async(req, res) => {
     const { itemName, itemImage, itemRelease, doNotSave } = req.body
     const user = req.user
     if(doNotSave == 'false'){
-        // console.log(itemName)
-        // console.log(req.body)
         const novoLog = new Backlog({ name: itemName, cover: itemImage, 
             finishStatus: 1,type: "game", released: itemRelease, user: user._id})
         try {
             await novoLog.save()
-            console.log('Log saved:', novoLog)
         } catch (err) {
             console.error('Erro:', err)
         }
@@ -128,14 +125,30 @@ app.post('/game/add', isLoggedIn, async(req, res) => {
 
 app.get('/gamedetail/:id', isLoggedIn, async(req, res) => {
     const id = req.params.id
+    let check = 0
+    var show = function() {
+        check++
+        console.log(check)
+    }
     const backlog = await Backlog.findById(id)
-    res.render('gamedetail', {backlog})
+    res.render('gamedetail', {backlog, check, show})
 })
 
 app.delete('/delete/:id', async (req, res) => {
     const id = req.params.id
     await Backlog.findByIdAndDelete(id)
     res.redirect('/game')
+})
+
+app.patch('/update/:id', async (req, res) => {
+    const id = req.params.id
+    try{
+        await Backlog.findByIdAndUpdate(id, req.body, {runValidators: true})
+    }catch (err) {
+        console.error('Erro:', err)
+    }
+    
+    res.redirect('/gamedetail/' + id)
 })
 
 app.get('/book', isLoggedIn,(req, res) => {

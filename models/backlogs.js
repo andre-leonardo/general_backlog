@@ -8,6 +8,9 @@ const backlogSchema = new mongoose.Schema({
     cover: {
         type: String
     },
+    nonLinkCover: {
+        
+    },
     description: {
         type: String
     },

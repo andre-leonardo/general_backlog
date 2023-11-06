@@ -10,9 +10,26 @@
         <% } else{ %>
             <p>Finished</p>
         <% } %>
-        <form action="/delete/<%= backlog.id %>?_method=DELETE" method="post">
-            <button>Remove from your backlog</button>
+        <form action="/delete/<%= backlog.id %>?_method=DELETE" method="post"> 
+            <button>Remove game from your backlog</button>
         </form>
-    </div>
+        
 
+        <button  onclick="toggleVisibility('showEditGame')">ModifyPage</button>
+        
+        <div id="showEditGame" hidden>
+            <form action="/update/<%= backlog.id %>?_method=PATCH" method="post"> 
+                <input type="text" name="name" value="<%= backlog.name %>">
+                <input type="text" name="released" value="<%= backlog.released %>">
+                <input type="text" name="cover" value="<%= backlog.cover %>">
+                <textarea name="description" id="" value="<%= backlog.description %>" cols="30" rows="10"><%= backlog.description %></textarea>
+                <button>Save</button>
+            </form>
+            <button id="hideEditGame">Cancel</button>
+        </div>
+        <p>Your thoughts on the <%= backlog.type %>:</p>
+        <p><%= backlog.description %></p>
+        
+
+    </div>
 <%-include('partials/footer')%>
