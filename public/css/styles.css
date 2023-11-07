@@ -1,11 +1,29 @@
 h1{
     color: blue;
 }
+.gold{
+    background-color: gold;
+}
+.green{
+    background-color: green;
+}
+.yellow{
+    background-color: yellow;
+}
+.red{
+    background-color: red;
+}
+.scoreInputs input{
+    border: none transparent;
+    outline: none;
+    font-size:1.3em; padding:.5em;
+}
 .general{
     margin:auto;
     width: 50%;
     text-align: left;
     padding-left: 60px;
+    border: #4CAF50 solid;
 }
 
 .botoes a{
@@ -38,7 +56,7 @@ img{
 }
 
 table{
-    border: 5px solid;
+
 }
 tr{
     padding: 5,5,5,5;

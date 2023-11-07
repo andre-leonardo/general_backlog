@@ -20,6 +20,9 @@ const backlogSchema = new mongoose.Schema({
     released: {
         type: String
     },
+    score: {
+        type: String
+    },
     type: {
         type: String
     },

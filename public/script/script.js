@@ -13,3 +13,10 @@ function toggleVisibility(id) {
     else
        e.style.display = 'block';
 }
+
+ 
+
+function resizeInput() {
+  this.style.width = this.value.length + "ch";
+}
+
