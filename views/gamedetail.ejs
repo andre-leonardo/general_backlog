@@ -46,7 +46,7 @@
             </select> 
         </form>
         
-        <div id="showEditGame" hidden>
+        <div class="bottom" id="showEditGame" hidden>
             <form action="/update/<%= backlog.id %>?_method=PATCH" method="post"> 
                 <input type="text" name="name" value="<%= backlog.name %>">
                 <input type="text" name="released" value="<%= backlog.released %>">
@@ -54,14 +54,14 @@
                 <textarea name="description" id="" value="<%= backlog.description %>" cols="30" rows="10"><%= backlog.description %></textarea>
                 <button>Save</button>
             </form>
-            <button id="hideEditGame">Cancel</button>
+            <button id="showEditGame" onclick="toggleVisibility('showEditGame')">Cancel</button>
         </div>
         <p>Your thoughts on the <%= backlog.type %>:</p>
         <p><%= backlog.description %></p>        
 
-        <button  onclick="toggleVisibility('showEditGame')">ModifyPage</button>
+        <button id="showEditGame" onclick="toggleVisibility('showEditGame')">ModifyPage</button>
         <form action="/delete/<%= backlog.id %>?_method=DELETE" method="post"> 
-            <button>Remove game from your backlog</button>
+            <button onclick="return confirm('Are you sure?');">Remove game from your backlog</button>
         </form>
     </div>
 <%-include('partials/footer')%>

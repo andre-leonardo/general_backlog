@@ -22,7 +22,10 @@ h1{
     margin:auto;
     width: 50%;
     text-align: left;
-    padding-left: 60px;
+    height: auto;
+    overflow:auto;
+    padding-left: 20px;
+    padding-right: 20px;
     border: #4CAF50 solid;
 }
 
@@ -49,15 +52,19 @@ img{
 .detail{
     width: 400px; 
     height: 440px; 
+    float: left;
 }
 .detailsgame{
     float: right;
     text-align: left;
 }
 
+
 table{
 
 }
+
+
 tr{
     padding: 5,5,5,5;
 }
