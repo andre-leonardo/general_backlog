@@ -10,6 +10,7 @@ const expressSession = require('express-session')
 const User = require('./models/user')
 const { name } = require("ejs")
 const Backlog = require("./models/backlogs")
+require('dotenv').config()
 
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))
@@ -89,13 +90,14 @@ app.get('/game', isLoggedIn, async(req, res) => {
 })
 
 app.post('/game', isLoggedIn, async(req, res) => {
+    const game_api = process.env.API_GAMES
     let showResult = true;
     let {name}  = req.body
     const user = req.user
     const backlogs = await Backlog.find({})
     //console.log(name)
     const options = {
-        url: 'http://www.giantbomb.com/api/search?api_key=1d034147e4ee8574f39f3ecd2ecbbafc6c792276&format=json&query=' + name + '&resources=game',
+        url: 'http://www.giantbomb.com/api/search?api_key='+ game_api +'&format=json&query=' + name + '&resources=game',
         headers: {
           'User-Agent': 'I\'m Doing a college work, it\'s a site of backlogs, where you can make backlogs of various things, and games is one of them, that is why I decided to use this API',
         }
@@ -152,13 +154,15 @@ app.patch('/update/:id', async (req, res) => {
 })
 
 app.get('/movie', isLoggedIn, async(req, res) => {
+    const movie_api = process.env.API_MOVIES
+    const movie_bearer = process.env.MOVIES_BEARER
     let showResult = true;
     let {name}  = req.body
     const user = req.user
     const backlogs = await Backlog.find({})
     const options = {
-        url: 'url https://api.themoviedb.org/3/movie/11?api_key=de5e786e6a8835115dac3aed71e51191',
-        header: 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkZTVlNzg2ZTZhODgzNTExNWRhYzNhZWQ3MWU1MTE5MSIsInN1YiI6IjY1NGJlZjg3NWE1ZWQwMDExZTA1OGJiZiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.4ZGgC9kTRt11fi1sZafVWSTF-YdloFu7AZV9Xy-IF4w'
+        url: 'url https://api.themoviedb.org/3/movie/11?api_key=' + movie_api,
+        header: 'Authorization: Bearer ' + movie_bearer
     };
     request(options, (error, response, body) => {
         if(!error && response.statusCode == 200){
