@@ -10,6 +10,7 @@ const expressSession = require('express-session')
 const User = require('./models/user')
 const { name } = require("ejs")
 const Backlog = require("./models/backlogs")
+const Customlog = require("./models/customIndetifier")
 require('dotenv').config()
 
 app.set('view engine', 'ejs')
@@ -111,18 +112,35 @@ app.post('/game', isLoggedIn, async(req, res) => {
     
 })
 app.post('/game/add', isLoggedIn, async(req, res) => {
-    const { itemName, itemImage, itemRelease, doNotSave } = req.body
+    const { itemName, itemImage, itemRelease, doNotSave, itemType } = req.body
+    const type = itemType
     const user = req.user
+    const posterUrl = 'https://image.tmdb.org/t/p/original/' + itemImage
     if(doNotSave == 'false'){
-        const novoLog = new Backlog({ name: itemName, cover: itemImage, 
-            finishStatus: 1,type: "game", released: itemRelease, user: user._id})
-        try {
-            await novoLog.save()
-        } catch (err) {
-            console.error('Erro:', err)
+        if(itemType === "movie"){
+            const novoLog = new Backlog({ name: itemName, cover: posterUrl, 
+                finishStatus: 1,type: type, released: itemRelease, user: user._id})
+            try {
+                await novoLog.save()
+            } catch (err) {
+                console.error('Erro:', err)
+            }
+        }else{
+            const novoLog = new Backlog({ name: itemName, cover: itemImage, 
+                finishStatus: 1,type: type, released: itemRelease, user: user._id})
+            try {
+                await novoLog.save()
+            } catch (err) {
+                console.error('Erro:', err)
+            }
         }
+            
+      
     }
-    res.redirect('/game')
+    if(type === "game")
+        res.redirect('/game')
+    if(type === "movie")
+        res.redirect('/movie')
 })
 
 app.get('/gamedetail/:id', isLoggedIn, async(req, res) => {
@@ -138,8 +156,12 @@ app.get('/gamedetail/:id', isLoggedIn, async(req, res) => {
 
 app.delete('/delete/:id', async (req, res) => {
     const id = req.params.id
+    const backlog = await Backlog.findById(id)
     await Backlog.findByIdAndDelete(id)
-    res.redirect('/game')
+    if(backlog.type === "game")
+        res.redirect('/game')
+    if(backlog.type === "movie")
+        res.redirect('/movie')
 })
 
 app.patch('/update/:id', async (req, res) => {
@@ -154,6 +176,14 @@ app.patch('/update/:id', async (req, res) => {
 })
 
 app.get('/movie', isLoggedIn, async(req, res) => {
+    const user = req.user
+    const backlogs = await Backlog.find({})
+    let showResult = false;
+    let resposta = null;
+    res.render('movie', {showResult, resposta, user, backlogs})
+})
+
+app.post('/movie', isLoggedIn, async(req, res) => {
     const movie_api = process.env.API_MOVIES
     const movie_bearer = process.env.MOVIES_BEARER
     let showResult = true;
@@ -161,20 +191,43 @@ app.get('/movie', isLoggedIn, async(req, res) => {
     const user = req.user
     const backlogs = await Backlog.find({})
     const options = {
-        url: 'url https://api.themoviedb.org/3/movie/11?api_key=' + movie_api,
-        header: 'Authorization: Bearer ' + movie_bearer
+        url: 'https://api.themoviedb.org/3/search/movie?query=' + name +'&api_key=' + movie_api,
+        header: 'Authorization: Bearer ' + movie_bearer,
+        header: 'accept: application/json'
     };
     request(options, (error, response, body) => {
         if(!error && response.statusCode == 200){
             resposta = JSON.parse(body)
         }
-        res.render('game', {showResult, resposta, backlogs, user})
+        res.render('movie', {showResult, resposta, backlogs, user})
     })
-    
-    res.render('movie')
 })
-app.get('/custom', isLoggedIn,(req, res) => {
-    res.render('custom')
+
+app.get('/custom', isLoggedIn, async(req, res) => {
+    const user = req.user
+    const customlogs = await Customlog.find({})
+    let showResult = false;
+    let resposta = null;
+    res.render('custom', {showResult, user, customlogs})
+})
+
+app.post('/custom/add', isLoggedIn, async(req, res) => {
+    const { itemName } = req.body
+    const user = req.user
+    const novoLog = new Customlog({ name: itemName, user: user._id})
+    try {
+        await novoLog.save()
+    } catch (err) {
+        console.error('Erro:', err)
+    }
+    res.redirect('/custom')
+})
+
+app.get('/custom/:id', isLoggedIn, async(req, res) => {
+    const user = req.user.id
+    const id = req.params
+    const customlogs = await Customlog.findById(id)
+    res.render('customTrue', {user, customlogs})
 })
 
 

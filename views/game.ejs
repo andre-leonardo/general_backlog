@@ -13,6 +13,7 @@
                 <input type="text" hidden value="<%= result.name %>" name="itemName">
                 <input type="text" hidden value="<%= result.image.original_url %>" name="itemImage">
                 <input type="text" hidden value="<%= result.original_release_date %>" name="itemRelease">
+                <input type="text" hidden value="game" name="itemType">
                 <input type="text" hidden value="false" name="doNotSave">
                 <img src="<%= result.image.original_url %>" alt="">
                 <p><%= result.name%></p>
@@ -30,7 +31,7 @@
     <table>
         <tr>
             
-            <% backlogs.forEach(log => {if(log.user == user.id){%>
+            <% backlogs.forEach(log => {if(log.user == user.id && log.type === "game"){%>
                 <% if(count % 4 == 0){ %>  <tr></tr> <% } %>
                 <th>
                     <p><%=log.name%></p>
@@ -41,5 +42,4 @@
             
         </tr>
     </table>
-
 <%-include('partials/footer')%>

@@ -18,7 +18,7 @@
                     <input class = "red" type="text" name="score" maxlength="5" size="5" value="<%= backlog.score  %>">
                 <% } else if(backlog.score == null) {%>
                     <input type="text" name="score" value="<%= backlog.score  %>">
-                <% } else if(backlog.score.trim() === "Dark Souls 2"){%>
+                <% } else if(backlog.score.trim() === "DS2"){%>
                     <input class = "gold" type="text" name="score" maxlength="5" size="5" value="<%= backlog.score  %>">
                 <% } else if(typeof backlog.score === 'string' || backlog.score instanceof String) {%>
                     <input type="text" name="score" maxlength="5" size="5"  value="<%= backlog.score  %>">
@@ -60,7 +60,11 @@
         <p><%= backlog.description %></p>        
 
         <button id="showEditGame" onclick="toggleVisibility('showEditGame')">ModifyPage</button>
+        <% if(backlog.type === "game") {%>
         <form action="/delete/<%= backlog.id %>?_method=DELETE" method="post"> 
+        <% }else if(backlog.type === "movie"){ %>
+            <form action="/delete/<%= backlog.id %>?_method=DELETE" method="post"> 
+        <% } %>
             <button onclick="return confirm('Are you sure?');">Remove game from your backlog</button>
         </form>
     </div>
