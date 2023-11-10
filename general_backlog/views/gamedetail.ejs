@@ -4,7 +4,7 @@
     <div class="detailsgame">
         <h2><%= backlog.name %></h2>
         <p><%= backlog.released  %></p>
-        <form action="/update/<%= user.id %>/<%= backlog.id %>?_method=PATCH" method="post">
+        <form action="/update/<%= backlog.id %>?_method=PATCH" method="post"> 
             <p>Score:</p>
             <div class="scoreInputs">
                 <% if(backlog.score > 10) {%>
@@ -28,7 +28,7 @@
             </div>
         </form>
             <label for="finishStatus">Your progress:</label>
-            <form action="/update/<%= user.id %>/<%= backlog.id %>?_method=PATCH" method="post"> 
+            <form action="/update/<%= backlog.id %>?_method=PATCH" method="post"> 
             <select name="finishStatus" id="prog"  onchange="this.form.submit()">
             <% if(backlog.finishStatus == 1) {%>
             <option value="1" selected>Unstarted</option>
@@ -47,12 +47,12 @@
         </form>
         
         <div class="bottom" id="showEditGame" hidden>
-            <form action="/update/<%= user.id %>/<%= backlog.id %>?_method=PATCH" method="post">
-                    <input type="text" name="itemName" value="<%= backlog.name %>">
-                    <input type="text" name="itemReleased" value="<%= backlog.released %>">
-                    <input type="text" name="itemCover" value="<%= backlog.cover %>">
-                    <textarea name="itemDescription" id="" value="<%= backlog.description %>" cols="30" rows="10"><%= user.description %></textarea>
-                    <button>Save</button>
+            <form action="/update/<%= backlog.id %>?_method=PATCH" method="post"> 
+                <input type="text" name="name" value="<%= backlog.name %>">
+                <input type="text" name="released" value="<%= backlog.released %>">
+                <input type="text" name="cover" value="<%= backlog.cover %>">
+                <textarea name="description" id="" value="<%= backlog.description %>" cols="30" rows="10"><%= backlog.description %></textarea>
+                <button>Save</button>
             </form>
             <button id="showEditGame" onclick="toggleVisibility('showEditGame')">Cancel</button>
         </div>
@@ -61,11 +61,10 @@
 
         <button id="showEditGame" onclick="toggleVisibility('showEditGame')">ModifyPage</button>
         <% if(backlog.type === "game") {%>
-        <form action="/delete/<%= user.id %>/<%= backlog.id %>?_method=DELETE" method="post"> 
+        <form action="/delete/<%= backlog.id %>?_method=DELETE" method="post"> 
         <% }else if(backlog.type === "movie"){ %>
-            <form action="/delete/<%= user.id %>/<%= backlog.id %>?_method=DELETE" method="post"> 
+            <form action="/delete/<%= backlog.id %>?_method=DELETE" method="post"> 
         <% } %>
-            <input type="text" name="type" value="<%= backlog.type %>" hidden id="">
             <button onclick="return confirm('Are you sure?');">Remove game from your backlog</button>
         </form>
     </div>
