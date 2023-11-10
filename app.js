@@ -8,6 +8,7 @@ const passport = require('passport')
 const localPassport = require('passport-local')
 const expressSession = require('express-session')
 const User = require('./models/user')
+const { name } = require("ejs")
 const Backlog = require("./models/backlogs")
 const Customlog = require("./models/customIndetifier")
 require('dotenv').config()
@@ -41,9 +42,7 @@ const isLoggedIn = (req, res, next) => {
 } 
 
 app.get('/', (req, res) => {
-    const user = req.user
-    
-    res.render('home', {user, isAuthenticated: req.isAuthenticated()})
+    res.render('home', {isAuthenticated: req.isAuthenticated()})
 })
 
 
@@ -96,6 +95,7 @@ app.post('/game', isLoggedIn, async(req, res) => {
     let showResult = true;
     let {name}  = req.body
     const user = req.user
+    const backlogs = await Backlog.find({})
     //console.log(name)
     const options = {
         url: 'http://www.giantbomb.com/api/search?api_key='+ game_api +'&format=json&query=' + name + '&resources=game',
@@ -107,41 +107,27 @@ app.post('/game', isLoggedIn, async(req, res) => {
         if(!error && response.statusCode == 200){
             resposta = JSON.parse(body)
         }
-        res.render('game', {showResult, resposta, user})
+        res.render('game', {showResult, resposta, backlogs, user})
     })
     
 })
 app.post('/game/add', isLoggedIn, async(req, res) => {
-    const { itemName, itemCover, itemReleased, doNotSave, itemType } = req.body
-    const posterUrl = 'https://image.tmdb.org/t/p/original/' + itemCover
-    const backlogs = {
-        name: itemName, 
-        cover: itemCover, 
-        released: itemReleased,
-        finishStatus: 1,
-        type: itemType
-    }
+    const { itemName, itemImage, itemRelease, doNotSave, itemType } = req.body
+    const type = itemType
     const user = req.user
-    
+    const posterUrl = 'https://image.tmdb.org/t/p/original/' + itemImage
     if(doNotSave == 'false'){
         if(itemType === "movie"){
-            const backlogs = {
-                name: itemName, 
-                cover: posterUrl, 
-                released: itemReleased, 
-                finishStatus: 1,
-                type: itemType
-            }
-            const novoLog = await User.findOneAndUpdate(
-                {_id: user.id}, {$addToSet: {backlogs: backlogs} })
+            const novoLog = new Backlog({ name: itemName, cover: posterUrl, 
+                finishStatus: 1,type: type, released: itemRelease, user: user._id})
             try {
                 await novoLog.save()
             } catch (err) {
                 console.error('Erro:', err)
             }
         }else{
-            const novoLog = await User.findOneAndUpdate(
-                {_id: user.id}, {$addToSet: {backlogs: backlogs} })
+            const novoLog = new Backlog({ name: itemName, cover: itemImage, 
+                finishStatus: 1,type: type, released: itemRelease, user: user._id})
             try {
                 await novoLog.save()
             } catch (err) {
@@ -151,70 +137,50 @@ app.post('/game/add', isLoggedIn, async(req, res) => {
             
       
     }
-    if(itemType === "game")
+    if(type === "game")
         res.redirect('/game')
-    if(itemType === "movie")
+    if(type === "movie")
         res.redirect('/movie')
 })
 
-app.get('/gamedetail/:idu/:idl', isLoggedIn, async(req, res) => {
-    const {idl, idu} = req.params
+app.get('/gamedetail/:id', isLoggedIn, async(req, res) => {
+    const id = req.params.id
     let check = 0
-    const user = await User.findById(idu)
-    const backlog = user.backlogs.find(backlog => backlog._id.toString() === idl);
-    res.render('gamedetail', {check, user, backlog, user})
+    var show = function() {
+        check++
+        console.log(check)
+    }
+    const backlog = await Backlog.findById(id)
+    res.render('gamedetail', {backlog, check, show})
 })
 
-app.delete('/delete/:idu/:idl',isLoggedIn, async (req, res) => {
-    const {idu, idl} = req.params
-    const type = req.body
-    try{
-        await User.updateOne(
-            { _id: idu },
-            {
-                $pull: {
-                    backlogs: { _id: idl }
-                }
-            }
-        );
-    }catch (err) {
-        console.error('Erro:', err)
-    }
-    if(type.type === "game")
+app.delete('/delete/:id', async (req, res) => {
+    const id = req.params.id
+    const backlog = await Backlog.findById(id)
+    await Backlog.findByIdAndDelete(id)
+    if(backlog.type === "game")
         res.redirect('/game')
-    if(type.type === "movie")
+    if(backlog.type === "movie")
         res.redirect('/movie')
 })
 
-app.patch('/update/:idu/:idl', isLoggedIn, async (req, res) => {
-    const {idu, idl} = req.params
-    const {itemName, itemCover, itemReleased, itemDescription, score, finishStatus} = req.body
+app.patch('/update/:id', async (req, res) => {
+    const id = req.params.id
     try{
-        await User.updateOne(
-            { _id: idu, 'backlogs._id': idl },
-            {
-                $set: {
-                    'backlogs.$.name': itemName,
-                    'backlogs.$.cover': itemCover,
-                    'backlogs.$.released': itemReleased,
-                    'backlogs.$.description': itemDescription,
-                    'backlogs.$.score': score,
-                    'backlogs.$.finishStatus': finishStatus,
-                },
-            }
-        );
+        await Backlog.findByIdAndUpdate(id, req.body, {runValidators: true})
     }catch (err) {
         console.error('Erro:', err)
     }
     
-    res.redirect('/gamedetail/' + idu + '/' + idl)
+    res.redirect('/gamedetail/' + id)
 })
 
 app.get('/movie', isLoggedIn, async(req, res) => {
     const user = req.user
+    const backlogs = await Backlog.find({})
     let showResult = false;
     let resposta = null;
-    res.render('movie', {showResult, resposta, user})
+    res.render('movie', {showResult, resposta, user, backlogs})
 })
 
 app.post('/movie', isLoggedIn, async(req, res) => {
@@ -223,6 +189,7 @@ app.post('/movie', isLoggedIn, async(req, res) => {
     let showResult = true;
     let {name}  = req.body
     const user = req.user
+    const backlogs = await Backlog.find({})
     const options = {
         url: 'https://api.themoviedb.org/3/search/movie?query=' + name +'&api_key=' + movie_api,
         header: 'Authorization: Bearer ' + movie_bearer,
@@ -232,24 +199,22 @@ app.post('/movie', isLoggedIn, async(req, res) => {
         if(!error && response.statusCode == 200){
             resposta = JSON.parse(body)
         }
-        res.render('movie', {showResult, resposta, user})
+        res.render('movie', {showResult, resposta, backlogs, user})
     })
 })
 
 app.get('/custom', isLoggedIn, async(req, res) => {
     const user = req.user
+    const customlogs = await Customlog.find({})
     let showResult = false;
-    res.render('custom', {showResult, user})
+    let resposta = null;
+    res.render('custom', {showResult, user, customlogs})
 })
 
 app.post('/custom/add', isLoggedIn, async(req, res) => {
     const { itemName } = req.body
-    const customlogs = {
-        name: itemName, 
-    }
     const user = req.user
-    const novoLog = await User.findOneAndUpdate(
-        {_id: user.id}, {$addToSet: {customlogs: customlogs} })
+    const novoLog = new Customlog({ name: itemName, user: user._id})
     try {
         await novoLog.save()
     } catch (err) {
@@ -258,11 +223,11 @@ app.post('/custom/add', isLoggedIn, async(req, res) => {
     res.redirect('/custom')
 })
 
-app.get('/custom/:idu/:idl', isLoggedIn, async(req, res) => {
-    const {idu, idl} = req.params
-    const user = await User.findById(idu)
-    const customlog = user.customlogs.find(customlog => customlog._id.toString() === idl);
-    res.render('customTrue', {user, customlog})
+app.get('/custom/:id', isLoggedIn, async(req, res) => {
+    const user = req.user.id
+    const id = req.params
+    const customlogs = await Customlog.findById(id)
+    res.render('customTrue', {user, customlogs})
 })
 
 

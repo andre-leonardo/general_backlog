@@ -12,13 +12,13 @@
     <table>
         <tr>
             
-            <% user.customlogs.forEach(log => {%>
+            <% customlogs.forEach(log => {if(log.user == user.id){%>
                 <% if(count % 4 == 0){ %>  <tr></tr> <% } %>
                 <th>
-                    <a href="/custom/<%=user.id%>/<%= log.id %>"><p><%= log.name %></p></a>
+                    <a href="/custom/<%= log.name %>"><p><%=log.name%></p></a>
                     <% count++ %>
                 </th>
-            <%}) %>
+            <%}}) %>
             
         </tr>
     </table>

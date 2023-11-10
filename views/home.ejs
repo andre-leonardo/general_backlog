@@ -14,11 +14,7 @@
 <div class="botoes">
     <a href="/game">Games backlog</a><br>
     <a href="/movie">Movies backlog</a><br>
-    <% if(user != undefined) {%>
-        <% user.customlogs.forEach(log => {%>
-    <a href="/customTrue"><%= log.name %> Backlog</a><br>       
-    <% })} %>
-    <a href="/custom">Create custom backlog</a><br>
+    <a href="/custom">Custom backlog</a><br>
 </div><br><br><br>
 
 <%-include('partials/footer')%>
