@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="/script/script.js"></script> 
+    <title>Document</title>
+</head>
+<%if(pass > 0) {%>
+<body onload="onLogin()">
+<% } else{%>
+    <body>
+<% } %>
+    
+<div class="general">
+
+<div class="authOptions">
+    <% if(isAuthenticated) {%>
+        <a href="/logout"><Button>Logout</Button></a><br>
+    <% }else {%>
+        <button onclick="onLogin()">Login</button>
+        <button onclick="onRegister()">Register</button>
+    <% } %>
+    
+</div>
+
+<div id="overlay">
+    <h1>Login:</h1>
+    <form action="/login" method="post">
+        <input type="text" name="username" placeholder="Username">
+        <input type="password" name="password" placeholder="Password">
+        <button>Enter</button>
+    </form>
+    <button onclick="off(); onRegister()">Register</button>
+    <button onclick="off()">Cancel</button>
+</div> 
+
+<div id="overlay" class="register">
+    <h1>Register:</h1>
+    <form action="/register" method="post">
+        <input type="text" name="username" placeholder="username">
+        <input type="password" name="password" placeholder="password">
+        <button>Send</button>
+    </form>
+    <button onclick="offRegister(); onLogin()">Login</button>
+    <button onclick="offRegister()">Cancel</button>
+</div> 
+    
+    <h1>BACKLOGS</h1>
+<div class="botoes">
+    <a href="/game">Games backlog</a><br>
+    <a href="/movie">Movies backlog</a><br>
+    <% if(user != undefined) {%>
+        <% user.customlogs.forEach(log => {%>
+    <a href="/custom/<%=user.id%>/<%= log.id %>"><%= log.name %> Backlog</a><br>       
+    <% })} %>
+    <a href="/custom">Create custom backlog</a><br>
+</div><br><br><br>
+
+</div>
+</body>
+</html>
