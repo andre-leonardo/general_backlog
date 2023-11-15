@@ -2,6 +2,10 @@
 <a href="/logout"><Button>Logout</Button></a> <button onclick="javascript:history.back()">Go back</button><br>
     <h1><%= customlog.name.toUpperCase()%> BACKLOG</h1>
     <button onclick="onAdd()">Add</button>
+    <form action="/deleteCustomlog/<%= user.id %>/<%= customlog.id %>?_method=DELETE" method="post"> 
+        <button>Delete custom backlog</button>
+    </form>
+    
     <div id="overlay" class="add">
         <h1>Add to backlog:</h1>
         <form action="/customTrue/add/<%= user.id %>/<%= customlog.id %>" method="post">
@@ -23,7 +27,7 @@
                 <% if(count % 4 == 0){ %>  <tr></tr> <% } %>
                 <th>
                     <p><%=log.name%></p>
-                    <a href="/gamedetail/<%=user.id%>/<%= log.id %>"><img src="<%= log.cover  %>" alt=""></a>
+                    <a href="/gamedetail/<%=user.id%>/<%= log.id %>/<%= customlog.id %>"><img src="<%= log.cover  %>" alt=""></a>
                     <% count++ %>
                 </th>
             <%}}) %>

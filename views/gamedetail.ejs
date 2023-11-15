@@ -4,7 +4,11 @@
     <div class="detailsgame">
         <h2><%= backlog.name %></h2>
         <p><%= backlog.released  %></p>
-        <form action="/update/<%= user.id %>/<%= backlog.id %>?_method=PATCH" method="post">
+        <% if (customlog) {%>
+            <form action="/update/<%= user.id %>/<%= backlog.id %>/<%= customlog.id %>?_method=PATCH" method="post">
+        <% } else {%>
+            <form action="/update/<%= user.id %>/<%= backlog.id %>/0?_method=PATCH" method="post">
+            <% } %>
             <p>Score:</p>
             <div class="scoreInputs">
                 <% if(backlog.score > 10) {%>
@@ -28,7 +32,11 @@
             </div>
         </form>
             <label for="finishStatus">Your progress:</label>
-            <form action="/update/<%= user.id %>/<%= backlog.id %>?_method=PATCH" method="post"> 
+            <% if (customlog) {%>
+                <form action="/update/<%= user.id %>/<%= backlog.id %>/<%= customlog.id %>?_method=PATCH" method="post">
+            <% } else {%>
+                <form action="/update/<%= user.id %>/<%= backlog.id %>/0?_method=PATCH" method="post">
+                <% } %>
             <select name="finishStatus" id="prog"  onchange="this.form.submit()">
             <% if(backlog.finishStatus == 1) {%>
             <option value="1" selected>Unstarted</option>
@@ -46,7 +54,11 @@
             </select> 
         </form>
         <div id="overlay" class="add">
-            <form action="/update/<%= user.id %>/<%= backlog.id %>?_method=PATCH" method="post">
+        <% if (customlog) {%>
+            <form action="/update/<%= user.id %>/<%= backlog.id %>/<%= customlog.id %>?_method=PATCH" method="post">
+        <% } else {%>
+            <form action="/update/<%= user.id %>/<%= backlog.id %>/0?_method=PATCH" method="post">
+            <% } %>
                     <input type="text" name="itemName" value="<%= backlog.name %>"><br><br>
                     <input type="text" name="itemReleased" value="<%= backlog.released %>"><br><br>
                     <input type="text" name="itemCover" value="<%= backlog.cover %>"><br><br>
@@ -59,13 +71,13 @@
         <p><%= backlog.description %></p>        
 
         <button onclick="onAdd()">ModifyPage</button>
-        <% if(backlog.type === "game") {%>
-        <form action="/delete/<%= user.id %>/<%= backlog.id %>?_method=DELETE" method="post"> 
-        <% }else if(backlog.type === "movie"){ %>
-            <form action="/delete/<%= user.id %>/<%= backlog.id %>?_method=DELETE" method="post"> 
+        <% if(backlog.type === "game" || backlog.type === "movie") {%>
+        <form action="/delete/<%= user.id %>/<%= backlog.id %>/0?_method=DELETE" method="post"> 
+        <% } else{%>
+            <form action="/delete/<%= user.id %>/<%= backlog.id %>/<%= customlog.id %>?_method=DELETE" method="post"> 
         <% } %>
-            <input type="text" name="type" value="<%= backlog.type %>" hidden id="">
-            <button onclick="return confirm('Are you sure?');">Remove game from your backlog</button>
+            <input type="text" name="type" value="<%= backlog.type %>" hidden>
+            <button onclick="return confirm('Are you sure?');">Remove <%= backlog.type %> from your backlog</button>
         </form>
     </div>
 <%-include('partials/footer')%>

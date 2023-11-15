@@ -35,7 +35,7 @@
                 <% if(count % 4 == 0){ %>  <tr></tr> <% } %>
                 <th>
                     <p><%=log.name%></p>
-                    <a href="/gamedetail/<%=user.id%>/<%= log.id %>"><img src="<%= log.cover  %>" alt=""></a>
+                    <a href="/gamedetail/<%=user.id%>/<%= log.id %>/0"><img src="<%= log.cover  %>" alt=""></a>
                     <% count++ %>
                 </th>
             <%}}) %>
@@ -43,3 +43,4 @@
         </tr>
     </table>
 <%-include('partials/footer')%>
+
