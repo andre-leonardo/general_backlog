@@ -1,9 +1,16 @@
 <%-include('partials/head')%>
 <a href="/logout"><Button>Logout</Button></a> <button onclick="javascript:history.back()">Go back</button><br>
-    <h1><%= customlog.name.toUpperCase()%> BACKLOG</h1>
+
+    <form action="/updateCustom/<%= user.id %>/<%= customlog.id %>?_method=PATCH" method="post">
+        <input class="headerCustom" type="text" name="itemName" value="<%= customlog.name %>" id="">
+        <button hidden>save</button>
+    </form>
+    
+    <h1>BACKLOG</h1>
     <button onclick="onAdd()">Add</button>
     <form action="/deleteCustomlog/<%= user.id %>/<%= customlog.id %>?_method=DELETE" method="post"> 
-        <button>Delete custom backlog</button>
+        <input type="text" hidden value="<%= customlog.name %>" name="type">
+        <button onclick="return confirm('Are you sure?');">Delete custom backlog</button>
     </form>
     
     <div id="overlay" class="add">

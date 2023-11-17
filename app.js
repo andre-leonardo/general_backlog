@@ -204,7 +204,6 @@ app.delete('/delete/:idu/:idl/:idc',isLoggedIn, async (req, res) => {
     }catch (err) {
         console.error('Erro:', err)
     }
-    console.log(type.type)
     if(type.type === "game")
         res.redirect('/game')
     else if(type.type === "movie")
@@ -297,10 +296,30 @@ app.post('/customTrue/add/:idu/:idl', isLoggedIn, async(req, res) => {
     }
 })
 
-app.delete('/deleteCustomlog/:idu/:idl',isLoggedIn, async (req, res) => {
+app.patch('/updateCustom/:idu/:idl', isLoggedIn, async (req, res) => {
     const {idu, idl} = req.params
-    const type = req.body
+    const user = await User.findById(idu)
+    const customlog = user.customlogs.find(customlog => customlog._id.toString() === idl)
+    const {itemName} = req.body
     try{
+        await User.updateOne(
+            { _id: idu, 'customlogs._id': idl },
+            {
+                $set: {
+                    'customlogs.$.name': itemName,
+                },
+            }
+        );
+    }catch (err) {
+        console.error('Erro:', err)
+    }
+        res.redirect('/custom/' + idu + '/' + idl)
+})
+
+app.delete('/deleteCustomlog/:idu/:idl', isLoggedIn, async (req, res) => {
+    const { idu, idl } = req.params;
+    const {type} = req.body
+    try {
         await User.updateOne(
             { _id: idu },
             {
@@ -309,11 +328,30 @@ app.delete('/deleteCustomlog/:idu/:idl',isLoggedIn, async (req, res) => {
                 }
             }
         )
-    }catch (err) {
-        console.error('Erro:', err)
+        await User.updateOne(
+            { _id: idu },
+            {
+                $pull: {
+                    'backlogs': { type: type }
+                }
+            }
+        )
+    } catch (err) {
+        console.error('Error:', err);
     }
-    res.redirect('/')
+
+    res.redirect('/');
+});
+
+
+
+app.get('/forum/:type', isLoggedIn, async (req, res) => {
+    const type = req.params
+    
 })
+
+
+
 
 
 
