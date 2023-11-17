@@ -1,34 +1,32 @@
 const {mongoose} = require('../db')
 var passportLocalMongoose = require("passport-local-mongoose")
 
-const userSchema = new mongoose.Schema({
-    game: [
+const forumSchema = new mongoose.Schema({
+    discussion: [
         {
-            name: {
-                type: String,
-                required: true,
-            },
+            name: String,
             text: String,
-            img: String
+            img: String,
+            discussionType: String,
+            user: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User'
+            },
+            answer: [
+                {
+                    text: String,
+                    img: String,
+                    user: {
+                        type: mongoose.Schema.Types.ObjectId,
+                        ref: 'User'
+                    }
+                }
+            ]
         }
     ],
-    movie: [
-        {
-            name: {
-                type: String,
-                required: true,
-            },
-            text: String,
-            img: String
-        }
-    ],
-    user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    }
 })
-userSchema.plugin(passportLocalMongoose)
+forumSchema.plugin(passportLocalMongoose)
 
-const User = mongoose.model("User", userSchema)
+const Forum = mongoose.model("Forum", forumSchema)
 
-module.exports = User
+module.exports = Forum

@@ -1,5 +1,47 @@
 <%-include('partials/head')%>
+<h1>Forum</h1>
+<p>
+    Rules: <br>
+    Discuss the topic of the Forum <br>
+    No race theory discussion <br>
+    Do not post anything that would get the federal police involved <br>
+</p>
+<button onclick="onAdd()">New discussion</button>
+<div id="overlay" class="add">
+    <form action="/forum/add" method="post">
+        <input type="text" hidden name="type" value="<%= type %>" id="">
+        <input type="text" name="itemName" placeholder="Name of the topic"><br>
+        <textarea name="itemText" placeholder="Type your ideas" id="" cols="30" rows="10"></textarea><br>
+        <input type="text" name="itemCover" placeholder="Image link"><br>
+        <button>Create post</button>
+    </form>
+    <button onclick="offAdd()">Cancel</button>
+</div>
 
+<% let count = 0 %>
+<%
+    console.log(forum)
+%>
+<table>
+    <tr>
+        
+        <% if (forum && forum.discussion) { %>
+            <% forum.discussion.forEach(log => { %>
+              <% if (log.discussionType === "game") { %>
+                <th>
+                  <p><%= log.name %></p>
+                  <!-- other properties -->
+                </th>
+                <% count++; %>
+              <% } %>
+            <% }); %>
+          <% } else { %>
+            <!-- Handle the case where forum or forum.discussion is undefined or null -->
+          <% } %>
+          
+        
+    </tr>
+</table>
 
 
 

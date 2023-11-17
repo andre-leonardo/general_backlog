@@ -9,6 +9,7 @@ const localPassport = require('passport-local')
 const expressSession = require('express-session')
 require('dotenv').config()
 const User = require('./models/user')
+const Forum = require('./models/forum')
 
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))
@@ -229,11 +230,10 @@ app.patch('/update/:idu/:idl/:idc', isLoggedIn, async (req, res) => {
                     'backlogs.$.finishStatus': finishStatus,
                 },
             }
-        );
+        )
     }catch (err) {
         console.error('Erro:', err)
     }
-    console.log(backlog.type)
     if(backlog.type == "game" || backlog.type == "movie")
     res.redirect('/gamedetail/' + idu + '/' + idl +  '/0')
     else{
@@ -288,8 +288,10 @@ app.post('/customTrue/add/:idu/:idl', isLoggedIn, async(req, res) => {
         type: itemType
     }
     const user = req.user
-    const novoLog = await User.findOneAndUpdate(
-    {_id: user.id}, {$addToSet: {backlogs: backlogs} })
+    await User.findOneAndUpdate(
+        {_id: user.id}, 
+        {$addToSet: {backlogs: backlogs} }
+    )
     res.redirect('/custom/' + idu + '/' + idl)
     } catch (err) {
         console.error('Erro:', err)
@@ -298,8 +300,6 @@ app.post('/customTrue/add/:idu/:idl', isLoggedIn, async(req, res) => {
 
 app.patch('/updateCustom/:idu/:idl', isLoggedIn, async (req, res) => {
     const {idu, idl} = req.params
-    const user = await User.findById(idu)
-    const customlog = user.customlogs.find(customlog => customlog._id.toString() === idl)
     const {itemName} = req.body
     try{
         await User.updateOne(
@@ -309,7 +309,7 @@ app.patch('/updateCustom/:idu/:idl', isLoggedIn, async (req, res) => {
                     'customlogs.$.name': itemName,
                 },
             }
-        );
+        )
     }catch (err) {
         console.error('Erro:', err)
     }
@@ -345,9 +345,77 @@ app.delete('/deleteCustomlog/:idu/:idl', isLoggedIn, async (req, res) => {
 
 
 
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////FORUM//////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////
+
+
+
+
 app.get('/forum/:type', isLoggedIn, async (req, res) => {
-    const type = req.params
-    
+    const {type} = req.params
+    const forum = await Forum.findOne()
+    const discussion = await forum.discussion.find(discussion => discussion.discussionType === type)
+    const user = req.user
+    if(!forum){
+        try{
+            const forum = new Forum()
+            await forum.save()
+        }catch (err) {
+            console.error('Erro:', err)
+        }
+    }
+    res.render('forum', {type, forum, discussion})       
+})
+
+app.post('/forum/add', isLoggedIn, async (req, res) => {
+    const {type, itemName, itemText, itemCover} = req.body
+    const discuss = {
+        name: itemName,
+        text: itemText,
+        img: itemCover,
+        discussionType: type
+    }
+    try{
+        const forum = await Forum.findOne()
+        const discussion = await forum.discussion.find(discussion => discussion.discussionType === type)
+        await Forum.findOneAndUpdate(
+            {_id: forum.id, 'discussion._id': discussion.id}, 
+            {$addToSet: {discussion: discuss} }
+        )
+        res.redirect('/forum/' + type)
+    }catch(err) {
+        console.error('Erro:', err)
+    }
+})
+
+app.patch('/forum/add', isLoggedIn, async (req, res) => {
+    const {type, itemName, itemText, itemCover} = req.body
+    try{
+        const forum = await Forum.findOne()
+        console.log(forum)
+        const discussion = await forum.discussion.find(discussion => discussion.discussionType === type)
+        console.log(discussion.id)
+        await Forum.updateOne(
+            { _id: forum.id, 'discussion._id': discussion.id },
+            {
+                $set: {
+                    'discussion.$.name': itemName,
+                    'discussion.$.img': itemCover,
+                    'discussion.$.text': itemText,
+                },
+            }
+        );
+        res.redirect('/forum/' + type)
+    }catch(err) {
+        console.error('Erro:', err)
+    }
 })
 
 
