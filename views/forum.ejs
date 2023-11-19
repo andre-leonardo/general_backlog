@@ -1,6 +1,6 @@
 <%-include('partials/head')%>
 <a href="/logout"><Button>Logout</Button></a> <button onclick="javascript:history.back()">Go back</button><br>
-<h1>Forum</h1>
+<h1><%= type.toUpperCase() %> FORUM</h1>
 <p>
     Rules: <br>
     Discuss the topic of the Forum <br>
@@ -19,62 +19,88 @@
     <button onclick="offAdd()">Cancel</button>
 </div>
 
-<% let count = 0 %>
 <table>
-    <tr>
-        
+        <% let count = 0 
+           let countans = 0  
+           let countEditAns = 0   
+        %>
         <% if (forum && forum.discussion) { %>
-            <% forum.discussion.forEach(log => { %>
-              <% if (log.discussionType === "game") { %>
+            <% forum.discussion.forEach((log) => { %>
+              <tr>
+              <% if (log.discussionType === type) { %>
                 <th>
-                  <tr>
-                    <p>Post by: <%= log.user %></p>
+                  
+                    <p>Post by: <%= log.user.username %></p>
                     <h3><%= log.name %></h3><br>
                     <p><%= log.text %></p>
                     <% if(log.img !== "") {%>
                       <img src="<%= log.img %>" alt="">
                     <% } %>
-
-                    <form action="/forumAnswer/add/<%= forum.id %>/<%= log.id %>?_method=PATCH" method="post">
-                      <div id="overlay" class="addAnswer">
-                        <textarea name="itemText" id="" cols="30" rows="10"></textarea>
-                        <input type="text" name="itemCover">
-                        <input type="text" name="type" value="<%= log.discussionType %>" hidden>
-                        <button onclick="offAddAnswer()">Confirm</button>
-                      </div>
-                    </form>
-                    <button onclick="onAddAnswer()">Reply</button>
+                    <br>
+                    <div id="overlay" class="addAnswer">
+                      <form action="/forumAnswer/add/<%= forum.id %>/<%= log.id %>" method="post">
+                          <textarea name="itemText" id="" cols="30" rows="10"></textarea>
+                          <input type="text" name="itemCover">
+                          <input type="text" name="type" value="<%= log.discussionType %>" hidden>
+                          <button onclick="offAddAnswer(<%= countans%>)">Reply</button>
+                      </form>
+                      <button onclick="offAddAnswer(<%= countans%>)">Cancel</button>
+                    </div>
+                    <button onclick="onAddAnswer(<%= countans%>)">Reply</button>
+                    <% countans++ %>
                     <p>Replies:</p><br>
-                    <% log.answer.forEach(ans => { %>
-                      <p><%= ans.text %></p>
-                      <img src="<%= ans.img %>" alt="">
+                    <% log.answer.forEach((ans, indexAns) => { %>
+                      <div class="answer">
+                        <p>Answer by: <%= ans.user.username %></p>
+                        <p><%= ans.text %></p>
+                        <% if(ans.img !== "") {%>
+                        <img src="<%= ans.img %>" alt="">
+                        <% } %>
+                      <% if(ans.user.id == user.id) {%>
+                        <div id="overlay" class="editAnswer">
+                          <form action="/updateForumAnswer/<%= forum.id %>/<%= log.id %>/<%= ans.id %>/<%= ans.user.id %>/<%= ans.user.username %>?_method=PATCH" method="post">
+                            <textarea type="text" name="itemText"  value="<%= log.text %>" id=""><%= log.text %></textarea>
+                            <input type="text" name="itemCover"  value="<%= log.img %>" id="">
+                            <input type="text" hidden name="type" value="<%= log.discussionType %>" id="">
+                            <button onclick="offEditAnswer(<%= countEditAns %>); return confirm('Are you sure?');">Confirm</button>
+                          </form>
+                          <button onclick="offEditAnswer(<%= countEditAns %>)">Cancel</button>
+                        </div><br>
+                        <button onclick="onEditAnswer(<%= countEditAns %>)">Edit answer</button>
+                        <form action="/deleteForumAnswer/<%= log.discussionType %>/<%= forum.id %>/<%= log.id %>/<%= ans.id %>?_method=DELETE" method="post">
+                          <button onclick="return confirm('Are you sure?');">Delete answer</button>
+                        </form>
+                        <% countEditAns++ %>
+                      <% } %>
+                    </div>
+            
                     <% }) %>
-
-                    <% if(log.user == user.id) {%>
-                    <div id="overlay" class="register">
+                    
+                    <% if(log.user.id == user.id) {%> 
+                    <div id="overlay" class="editDiscuss">
                       <form action="/updateForumDiscussion/<%= forum.id %>/<%= log.id %>?_method=PATCH" method="post">
                         <input type="text" name="itemName"  value="<%= log.name %>" id="">
                         <textarea type="text" name="itemText"  value="<%= log.text %>" id=""><%= log.text %></textarea>
                         <input type="text" name="itemCover"  value="<%= log.img %>" id="">
                         <input type="text" hidden name="type" value="<%= log.discussionType %>" id="">
-                        <button onclick="offRegister(); return confirm('Are you sure?');">Confirm</button>
+                        <button onclick="offEditDiscuss(<%= count %>); return confirm('Are you sure?');">Confirm</button>
                       </form>
-                      <button onclick="offRegister()">Cancel</button>
-                    </div>
-                      <button onclick="onRegister()">Edit</button>
+                      <button onclick="offEditDiscuss(<%= count %>)">Cancel</button>
+                    </div><br><br>
+                    <button onclick="onEditDiscuss(<%= count %>)">Edit discussion</button>
                       <form action="/deleteForumDiscussion/<%= log.discussionType %>/<%= forum.id %>/<%= log.id %>?_method=DELETE" method="post">
-                        <button onclick="return confirm('Are you sure?');">Delete</button>
+                        <button onclick="return confirm('Are you sure?');">Delete discussion</button>
                       </form>
+                      <% count++ %>  
                     <% } %>
-                  </tr>                 
+                                
                 </th>
-                <% count++; %>
               <% } %>
+              </tr>
             <% }) %>
           <% } %>
           
         
-    </tr>
 </table>
 
 

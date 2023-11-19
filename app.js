@@ -391,13 +391,14 @@ app.post('/forum/add/:id', isLoggedIn, async (req, res) => {
         text: itemText,
         img: itemCover,
         discussionType: type,
-        user: user.id
+        user: {
+            id: user.id,
+            username: user.username
+        }
     }
     try{
-        const forum = await Forum.findById(id)
-        console.log(forum)
         await Forum.findOneAndUpdate(
-            {_id: forum.id}, 
+            {_id: id}, 
             {$addToSet: {discussion: discuss} }
         )
         res.redirect('/forum/' + type)
@@ -410,9 +411,8 @@ app.patch('/updateForumDiscussion/:idf/:id', isLoggedIn, async (req, res) => {
     const {type, itemName, itemText, itemCover} = req.body
     const {idf, id} = req.params
     try{
-        const forum = await Forum.findById(idf)
-        await Forum.updateOne(
-            { _id: forum.id, 'discussion._id': id },
+        await Forum.findOneAndUpdate(
+            { _id: idf, 'discussion._id': id },
             {
                 $set: {
                     'discussion.$.name': itemName,
@@ -430,9 +430,8 @@ app.patch('/updateForumDiscussion/:idf/:id', isLoggedIn, async (req, res) => {
 app.delete('/deleteForumDiscussion/:type/:idf/:id', isLoggedIn, async (req, res) => {
     const {idf, id, type} = req.params
     try{
-        const forum = await Forum.findById(idf)
-        await Forum.updateOne(
-            { _id: forum.id },
+        await Forum.findOneAndUpdate(
+            { _id: idf },
             {
                 $pull: {
                     discussion: { _id: id }
@@ -449,7 +448,7 @@ app.delete('/deleteForumDiscussion/:type/:idf/:id', isLoggedIn, async (req, res)
 
 ///////CREATE AN ANSWER TO THE DISCUSSION
 
-app.patch('/forumAnswer/add/:idf/:id', isLoggedIn, async (req, res) => {
+app.post('/forumAnswer/add/:idf/:id', isLoggedIn, async (req, res) => {
     const {type, itemText, itemCover} = req.body
     const {idf, id} = req.params
     const user = req.user
@@ -457,11 +456,14 @@ app.patch('/forumAnswer/add/:idf/:id', isLoggedIn, async (req, res) => {
         {
             text: itemText,
             img: itemCover,
-            user: user.id
+            user: {
+                id: user.id,
+                username: user.username
+            }
         }
 
     try{
-        await Forum.updateOne(
+        await Forum.findOneAndUpdate(
             { _id: idf, 'discussion._id': id },
             {
                 $push: {
@@ -472,6 +474,50 @@ app.patch('/forumAnswer/add/:idf/:id', isLoggedIn, async (req, res) => {
         res.redirect('/forum/' + type)
     }catch(err) {
         console.error('Erro:', err)
+    }
+})
+
+app.patch('/updateForumAnswer/:idf/:idd/:ida/:userid/:username', isLoggedIn, async (req, res) => {
+    const { type, itemText, itemCover } = req.body;
+    const { idf, idd, ida, userid, username } = req.params;
+
+    const answer = {
+        'discussion.$[outer].answer.$[inner].text': itemText,
+        'discussion.$[outer].answer.$[inner].img': itemCover,
+    };
+
+
+    const arrayFilters = [
+        { 'outer._id': idd },
+        { 'inner._id': ida },
+    ];
+
+    try {
+        await Forum.findOneAndUpdate(
+            {_id: idf, 'discussion._id': idd}, 
+            { $set: answer }, 
+            { arrayFilters }
+        );
+        res.redirect('/forum/' + type);
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).send('Internal Server Error')
+    }
+});
+app.delete('/deleteForumAnswer/:type/:idf/:idd/:ida', isLoggedIn, async (req, res) => {
+    const {idf, idd, ida, type} = req.params
+    try{
+        await Forum.findOneAndUpdate(
+            { _id: idf, 'discussion._id': idd },
+            {
+                $pull: {
+                    'discussion.$.answer': { _id: ida }
+                }
+            }
+        )
+        res.redirect('/forum/' + type)
+    } catch(err) {
+        console.log(err)
     }
 })
 

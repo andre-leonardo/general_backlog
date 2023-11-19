@@ -9,16 +9,22 @@ const forumSchema = new mongoose.Schema({
             img: String,
             discussionType: String,
             user: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'User'
+                id: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'User'
+                },
+                username: String
             },
             answer: [
                 {
                     text: String,
                     img: String,
                     user: {
-                        type: mongoose.Schema.Types.ObjectId,
-                        ref: 'User'
+                        id: {
+                            type: mongoose.Schema.Types.ObjectId,
+                            ref: 'User'
+                        },
+                        username: String
                     }
                 }
             ]

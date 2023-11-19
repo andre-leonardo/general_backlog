@@ -1,5 +1,10 @@
 <%-include('partials/head')%>
 <a href="/logout"><Button>Logout</Button></a> <button onclick="javascript:history.back()">Go back</button><br>
+    <div class="forumbutton">
+    <form action="/forum/movie">
+        <button>Discuss</button>
+    </form>
+    </div>
     <h1>MOVIE BACKLOG</h1>
     <form action="/movie" method="post">
         <input type="text" name="name" placeholder="name"> <p>API credits: TMDB</p>
