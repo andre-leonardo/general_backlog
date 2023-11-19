@@ -1,4 +1,5 @@
 <%-include('partials/head')%>
+<a href="/logout"><Button>Logout</Button></a> <button onclick="javascript:history.back()">Go back</button><br>
 <h1>Forum</h1>
 <p>
     Rules: <br>
@@ -8,7 +9,7 @@
 </p>
 <button onclick="onAdd()">New discussion</button>
 <div id="overlay" class="add">
-    <form action="/forum/add" method="post">
+    <form action="/forum/add/<%= forum.id %>" method="post">
         <input type="text" hidden name="type" value="<%= type %>" id="">
         <input type="text" name="itemName" placeholder="Name of the topic"><br>
         <textarea name="itemText" placeholder="Type your ideas" id="" cols="30" rows="10"></textarea><br>
@@ -19,9 +20,6 @@
 </div>
 
 <% let count = 0 %>
-<%
-    console.log(forum)
-%>
 <table>
     <tr>
         
@@ -29,14 +27,50 @@
             <% forum.discussion.forEach(log => { %>
               <% if (log.discussionType === "game") { %>
                 <th>
-                  <p><%= log.name %></p>
-                  <!-- other properties -->
+                  <tr>
+                    <p>Post by: <%= log.user %></p>
+                    <h3><%= log.name %></h3><br>
+                    <p><%= log.text %></p>
+                    <% if(log.img !== "") {%>
+                      <img src="<%= log.img %>" alt="">
+                    <% } %>
+
+                    <form action="/forumAnswer/add/<%= forum.id %>/<%= log.id %>?_method=PATCH" method="post">
+                      <div id="overlay" class="addAnswer">
+                        <textarea name="itemText" id="" cols="30" rows="10"></textarea>
+                        <input type="text" name="itemCover">
+                        <input type="text" name="type" value="<%= log.discussionType %>" hidden>
+                        <button onclick="offAddAnswer()">Confirm</button>
+                      </div>
+                    </form>
+                    <button onclick="onAddAnswer()">Reply</button>
+                    <p>Replies:</p><br>
+                    <% log.answer.forEach(ans => { %>
+                      <p><%= ans.text %></p>
+                      <img src="<%= ans.img %>" alt="">
+                    <% }) %>
+
+                    <% if(log.user == user.id) {%>
+                    <div id="overlay" class="register">
+                      <form action="/updateForumDiscussion/<%= forum.id %>/<%= log.id %>?_method=PATCH" method="post">
+                        <input type="text" name="itemName"  value="<%= log.name %>" id="">
+                        <textarea type="text" name="itemText"  value="<%= log.text %>" id=""><%= log.text %></textarea>
+                        <input type="text" name="itemCover"  value="<%= log.img %>" id="">
+                        <input type="text" hidden name="type" value="<%= log.discussionType %>" id="">
+                        <button onclick="offRegister(); return confirm('Are you sure?');">Confirm</button>
+                      </form>
+                      <button onclick="offRegister()">Cancel</button>
+                    </div>
+                      <button onclick="onRegister()">Edit</button>
+                      <form action="/deleteForumDiscussion/<%= log.discussionType %>/<%= forum.id %>/<%= log.id %>?_method=DELETE" method="post">
+                        <button onclick="return confirm('Are you sure?');">Delete</button>
+                      </form>
+                    <% } %>
+                  </tr>                 
                 </th>
                 <% count++; %>
               <% } %>
-            <% }); %>
-          <% } else { %>
-            <!-- Handle the case where forum or forum.discussion is undefined or null -->
+            <% }) %>
           <% } %>
           
         

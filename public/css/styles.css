@@ -39,7 +39,7 @@ h1{
 }
 
 .botoes a{
-    background-color: #4CAF50; /* Green */
+    background-color: #4CAF50; 
     border: none;
     color: white;
     padding: 15px 32px;
@@ -71,6 +71,7 @@ img{
 
 tr{
     padding: 5,5,5,5;
+    border: 5px solid white;
 }
 
 #overlay {

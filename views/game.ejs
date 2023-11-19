@@ -35,8 +35,7 @@
     <% let count = 0 %>
 
     <table>
-        <tr>
-            
+        <tr>   
             <% user.backlogs.forEach(log => {if(log.type === "game"){%>
                 <% if(count % 4 == 0){ %>  <tr></tr> <% } %>
                 <th>
@@ -44,8 +43,7 @@
                     <a href="/gamedetail/<%=user.id%>/<%= log.id %>/0"><img src="<%= log.cover  %>" alt=""></a>
                     <% count++ %>
                 </th>
-            <%}}) %>
-            
+            <%}}) %>      
         </tr>
     </table>
 <%-include('partials/footer')%>

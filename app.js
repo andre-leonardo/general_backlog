@@ -360,33 +360,44 @@ app.delete('/deleteCustomlog/:idu/:idl', isLoggedIn, async (req, res) => {
 
 app.get('/forum/:type', isLoggedIn, async (req, res) => {
     const {type} = req.params
-    const forum = await Forum.findOne()
-    const discussion = await forum.discussion.find(discussion => discussion.discussionType === type)
     const user = req.user
+    let forum = await Forum.findOne()
     if(!forum){
         try{
-            const forum = new Forum()
+            forum = new Forum()
             await forum.save()
         }catch (err) {
             console.error('Erro:', err)
         }
     }
-    res.render('forum', {type, forum, discussion})       
+    if(!forum.discussion){
+
+    }
+    const discussion = await forum.discussion.find(discussion => discussion.discussionType === type)
+    res.render('forum', {type, forum, discussion, user})       
 })
 
-app.post('/forum/add', isLoggedIn, async (req, res) => {
+
+
+
+///////CREATE A DISCUSSION
+
+app.post('/forum/add/:id', isLoggedIn, async (req, res) => {
     const {type, itemName, itemText, itemCover} = req.body
+    const {id} = req.params
+    const user = req.user
     const discuss = {
         name: itemName,
         text: itemText,
         img: itemCover,
-        discussionType: type
+        discussionType: type,
+        user: user.id
     }
     try{
-        const forum = await Forum.findOne()
-        const discussion = await forum.discussion.find(discussion => discussion.discussionType === type)
+        const forum = await Forum.findById(id)
+        console.log(forum)
         await Forum.findOneAndUpdate(
-            {_id: forum.id, 'discussion._id': discussion.id}, 
+            {_id: forum.id}, 
             {$addToSet: {discussion: discuss} }
         )
         res.redirect('/forum/' + type)
@@ -395,15 +406,13 @@ app.post('/forum/add', isLoggedIn, async (req, res) => {
     }
 })
 
-app.patch('/forum/add', isLoggedIn, async (req, res) => {
+app.patch('/updateForumDiscussion/:idf/:id', isLoggedIn, async (req, res) => {
     const {type, itemName, itemText, itemCover} = req.body
+    const {idf, id} = req.params
     try{
-        const forum = await Forum.findOne()
-        console.log(forum)
-        const discussion = await forum.discussion.find(discussion => discussion.discussionType === type)
-        console.log(discussion.id)
+        const forum = await Forum.findById(idf)
         await Forum.updateOne(
-            { _id: forum.id, 'discussion._id': discussion.id },
+            { _id: forum.id, 'discussion._id': id },
             {
                 $set: {
                     'discussion.$.name': itemName,
@@ -411,7 +420,55 @@ app.patch('/forum/add', isLoggedIn, async (req, res) => {
                     'discussion.$.text': itemText,
                 },
             }
-        );
+        )
+        res.redirect('/forum/' + type)
+    }catch(err) {
+        console.error('Erro:', err)
+    }
+})
+
+app.delete('/deleteForumDiscussion/:type/:idf/:id', isLoggedIn, async (req, res) => {
+    const {idf, id, type} = req.params
+    try{
+        const forum = await Forum.findById(idf)
+        await Forum.updateOne(
+            { _id: forum.id },
+            {
+                $pull: {
+                    discussion: { _id: id }
+                }
+            }
+        )
+        res.redirect('/forum/' + type)
+    } catch(err) {
+        console.log(err)
+    }
+})
+
+
+
+///////CREATE AN ANSWER TO THE DISCUSSION
+
+app.patch('/forumAnswer/add/:idf/:id', isLoggedIn, async (req, res) => {
+    const {type, itemText, itemCover} = req.body
+    const {idf, id} = req.params
+    const user = req.user
+    const  answer =  
+        {
+            text: itemText,
+            img: itemCover,
+            user: user.id
+        }
+
+    try{
+        await Forum.updateOne(
+            { _id: idf, 'discussion._id': id },
+            {
+                $push: {
+                    'discussion.$.answer': answer
+                },
+            }
+        )
         res.redirect('/forum/' + type)
     }catch(err) {
         console.error('Erro:', err)

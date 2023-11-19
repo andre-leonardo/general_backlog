@@ -42,4 +42,12 @@ function offAdd() {
   document.getElementsByClassName("add")[0].style.display = "none";
 }
 
+function onAddAnswer() {
+  document.getElementsByClassName("addAnswer")[0].style.display = "block";
+}
+
+function offAddAnswer() {
+  document.getElementsByClassName("addAnswer")[0].style.display = "none";
+}
+
 
