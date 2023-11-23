@@ -1,5 +1,5 @@
 <%-include('partials/head')%>
-<a href="/logout">Logout</a><br>
+<a href="/logout"><Button>Logout</Button></a> <button onclick="javascript:history.back()">Go back</button><br>
     <h1>CREATE A CUSTOM BACKLOG</h1>
     <form action="/custom/add" method="post">
         <input type="text" name="itemName" placeholder="Name of the new backlog"> 
@@ -12,13 +12,13 @@
     <table>
         <tr>
             
-            <% customlogs.forEach(log => {if(log.user == user.id){%>
+            <% user.customlogs.forEach(log => {%>
                 <% if(count % 4 == 0){ %>  <tr></tr> <% } %>
                 <th>
-                    <a href="/custom/<%= log.name %>"><p><%=log.name%></p></a>
+                    <a href="/custom/<%=user.id%>/<%= log.id %>"><p><%= log.name %></p></a>
                     <% count++ %>
                 </th>
-            <%}}) %>
+            <%}) %>
             
         </tr>
     </table>
