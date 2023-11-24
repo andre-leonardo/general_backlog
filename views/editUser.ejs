@@ -1,0 +1,14 @@
+<%-include('partials/head')%>
+<a href="/logout"><Button>Logout</Button></a> <button onclick="javascript:history.back()">Go back</button><br>
+<form action="/updateUser?_method=PATCH" method="post">
+    <label for="username">Username</label>
+        <input type="text" name="username" value="<%= user.username %>"><br>
+    <label for="password">Password</label>
+        <input type="password" name="password" value="<%= user.password %>"><br>
+    <label for="avatar">Avatar link</label>
+        <input type="text" name="avatar" value="<%= user.avatar %>"><br>
+    <label for="bio">Bio</label>
+        <textarea name="bio" id="" cols="30" rows="10"><%= user.bio %></textarea><br>
+    <button>Save changes</button>
+</form>
+<%-include('partials/footer')%>

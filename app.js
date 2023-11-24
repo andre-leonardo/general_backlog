@@ -48,12 +48,10 @@ app.get('/', (req, res) => {
     res.render('home', {pass, user, isAuthenticated: req.isAuthenticated()})
 })
 
-
 app.post('/register', (req, res) => {
     User.register(new User({username: req.body.username}), req.body.password, (err, user) => {
         if (err){
-            console.log(err)
-            res.redirect('register')
+            res.status(404).send({ err })
         } else{
             passport.authenticate('local')(req,res, () => {
                 res.redirect('/')
@@ -63,16 +61,44 @@ app.post('/register', (req, res) => {
     })
 })
 
-
 app.post('/login', passport.authenticate('local', { 
-    failureRedirect: '/login', failureMessage: true }), function(req, res) {
+    failureRedirect: '/', failureMessage: true }), function(req, res) {
         res.redirect('/')
 })
-
 
 app.get("/logout", (req, res) => {
     req.logout(() => {})
     res.redirect('/')
+})
+
+app.get("/user/:id", isLoggedIn, async (req, res) => {
+    const user = req.user
+    const id = req.params.id
+    try{
+        const visitedUser = await User.findById(id)
+        res.render('userPage', {user, visitedUser})
+    }catch(err){
+        console.log(err)
+    }
+    
+    
+})
+
+app.get("/editUser", isLoggedIn, (req,res) => {
+    const user = req.user
+    res.render('editUser', {user})
+})
+
+app.patch("/updateUser", isLoggedIn, async (req,res) => {
+    const user = req.user
+    const {username, password, avatar, bio} = req.body
+    await User.findOneAndUpdate(
+        {_id: user.id}, 
+        {$set: {username: username, password: password, 
+            avatar: avatar, bio: bio}},
+        {new: true}
+    )
+    res.redirect('/user/' + user.id)
 })
 
 let resposta = {}
@@ -85,7 +111,7 @@ app.get('/game', isLoggedIn, async(req, res) => {
 
 app.post('/game', isLoggedIn, async(req, res) => {
     const game_api = process.env.API_GAMES
-    let showResult = true;
+    let showResult = true
     let {name}  = req.body
     const user = req.user
     const options = {
@@ -93,10 +119,11 @@ app.post('/game', isLoggedIn, async(req, res) => {
         headers: {
           'User-Agent': 'I\'m Doing a college work, it\'s a site of backlogs, where you can make backlogs of various things, and games is one of them, that is why I decided to use this API',
         }
-    };
+    }
     request(options, (error, response, body) => {
         if(!error && response.statusCode == 200){
             resposta = JSON.parse(body)
+            console.log(resposta)
         }
         res.render('game', {showResult, resposta, user})
     })
@@ -114,7 +141,7 @@ app.get('/movie', isLoggedIn, async(req, res) => {
 app.post('/movie', isLoggedIn, async(req, res) => {
     const movie_api = process.env.API_MOVIES
     const movie_bearer = process.env.MOVIES_BEARER
-    let showResult = true;
+    let showResult = true
     let {name}  = req.body
     const user = req.user
     const options = {
@@ -361,6 +388,7 @@ app.delete('/deleteCustomlog/:idu/:idl', isLoggedIn, async (req, res) => {
 app.get('/forum/:type', isLoggedIn, async (req, res) => {
     const {type} = req.params
     const user = req.user
+    const users = await User.find()
     let forum = await Forum.findOne()
     if(!forum){
         try{
@@ -370,11 +398,8 @@ app.get('/forum/:type', isLoggedIn, async (req, res) => {
             console.error('Erro:', err)
         }
     }
-    if(!forum.discussion){
-
-    }
     const discussion = await forum.discussion.find(discussion => discussion.discussionType === type)
-    res.render('forum', {type, forum, discussion, user})       
+    res.render('forum', {type, forum, discussion, user, users})       
 })
 
 
@@ -392,8 +417,7 @@ app.post('/forum/add/:id', isLoggedIn, async (req, res) => {
         img: itemCover,
         discussionType: type,
         user: {
-            id: user.id,
-            username: user.username
+            id: user.id
         }
     }
     try{
@@ -457,8 +481,7 @@ app.post('/forumAnswer/add/:idf/:id', isLoggedIn, async (req, res) => {
             text: itemText,
             img: itemCover,
             user: {
-                id: user.id,
-                username: user.username
+                id: user.id
             }
         }
 
@@ -479,7 +502,7 @@ app.post('/forumAnswer/add/:idf/:id', isLoggedIn, async (req, res) => {
 
 app.patch('/updateForumAnswer/:idf/:idd/:ida/:userid/:username', isLoggedIn, async (req, res) => {
     const { type, itemText, itemCover } = req.body;
-    const { idf, idd, ida, userid, username } = req.params;
+    const { idf, idd, ida } = req.params;
 
     const answer = {
         'discussion.$[outer].answer.$[inner].text': itemText,
@@ -500,7 +523,7 @@ app.patch('/updateForumAnswer/:idf/:idd/:ida/:userid/:username', isLoggedIn, asy
         );
         res.redirect('/forum/' + type);
     } catch (err) {
-        console.error('Error:', err);
+        console.error('Error:', err)
         res.status(500).send('Internal Server Error')
     }
 });
