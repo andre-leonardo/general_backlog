@@ -29,6 +29,6 @@ game.ejs - lets the user add games using the GiantBomb API and see all the ones 
 movie.ejs - same as the page above but with movies and using the TheMovieDataBase API <br>
 gamedetail - shows details for each specific item in all backlogs and lets you edit them <br>
 
-<img src="[https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif](https://bobbyhadz.com/images/blog/change-vscode-integrated-terminal-colors/hover-over-color.gif](https://cdn.pixabay.com/animation/2023/01/06/20/32/20-32-50-196_512.gif)https://cdn.pixabay.com/animation/2023/01/06/20/32/20-32-50-196_512.gif)https://bobbyhadz.com/images/blog/change-vscode-integrated-terminal-colors/hover-over-color.gif](https://cdn.pixabay.com/animation/2023/01/06/20/32/20-32-50-196_512.gif)https://cdn.pixabay.com/animation/2023/01/06/20/32/20-32-50-196_512.gif" width="40" height="40" />
+<img src="[[https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif](https://bobbyhadz.com/images/blog/change-vscode-integrated-terminal-colors/hover-over-color.gif](https://cdn.pixabay.com/animation/2023/01/06/20/32/20-32-50-196_512.gif)https://cdn.pixabay.com/animation/2023/01/06/20/32/20-32-50-196_512.gif)https://bobbyhadz.com/images/blog/change-vscode-integrated-terminal-colors/hover-over-color.gif](https://cdn.pixabay.com/animation/2023/01/06/20/32/20-32-50-196_512.gif)https://cdn.pixabay.com/animation/2023/01/06/20/32/20-32-50-196_512.gif](https://i.kym-cdn.com/photos/images/original/001/956/043/df2.jpg)https://i.kym-cdn.com/photos/images/original/001/956/043/df2.jpg" width="40" height="40" />
 
 
