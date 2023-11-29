@@ -1,0 +1,51 @@
+<%-include('partials/head')%>
+<a href="/logout"><Button>Logout</Button></a> <button onclick="javascript:history.back()">Go back</button><br>
+    <div class="forumbutton">
+    <form action="/forum/movie">
+        <button>Discuss</button>
+    </form>
+    </div>
+    <h1>MOVIE BACKLOG</h1>
+    <form action="/movie" method="post">
+        <input type="text" name="name" placeholder="name"> <p>API credits: TMDB</p>
+        <input type="text" hidden value="true" name="doNotSave">
+        <br>
+        <button>Search</button>
+    </form>
+    <% if(resposta!=null){ %>
+        <% for(result of resposta.results) {%>
+            <form action="/game/add" method="post">
+                <input type="text" hidden value="<%= result.title %>" name="itemName">
+                <input type="text" hidden value="<%= result.poster_path %>" name="itemCover">
+                <input type="text" hidden value="<%= result.release_date %>" name="itemReleased">
+                <input type="text" hidden value="movie" name="itemType">
+                <input type="text" hidden value="false" name="doNotSave">
+                <img src="https://image.tmdb.org/t/p/original/<%= result.poster_path %>" alt="">
+                <p><%= result.title%></p>
+                <p><%= result.release_date%></p>
+                
+                <button>Add</button>
+            </form>
+        <%}; %>
+        
+    <% } %>
+    
+
+    <% let count = 0 %>
+
+    <table>
+        <tr>
+            
+            <% user.backlogs.forEach(log => {if(log.type === "movie"){%>
+                <% if(count % 4 == 0){ %>  <tr></tr> <% } %>
+                <th>
+                    <p><%=log.name%></p>
+                    <a href="/gamedetail/<%=user.id%>/<%= log.id %>/0"><img src="<%= log.cover  %>" alt=""></a>
+                    <% count++ %>
+                </th>
+            <%}}) %>
+            
+        </tr>
+    </table>
+<%-include('partials/footer')%>
+

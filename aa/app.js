@@ -59,7 +59,6 @@ app.post('/register', (req, res) => {
     User.register(new User({username: req.body.username, avatar: '/img/' + profilePicture + '.jpg'}), req.body.password, (err, user) => {
         if (err){
             res.status(404).send({ err })
-            res.status(404).send({ err })
         } else{
             passport.authenticate('local')(req,res, () => {
                 res.redirect('/')
@@ -72,7 +71,6 @@ app.post('/register', (req, res) => {
 app.post('/login', passport.authenticate('local', { 
     failureRedirect: '/', failureMessage: true }), function(req, res) {
         res.redirect('/')
-    
 })
 
 app.get("/logout", (req, res) => {
@@ -142,7 +140,6 @@ app.post('/game', isLoggedIn, async(req, res) => {
     })
     
 })
-
 
 
 app.get('/movie', isLoggedIn, async(req, res) => {
@@ -427,7 +424,6 @@ app.get('/forum/:type', isLoggedIn, async (req, res) => {
     }
     const discussion = await forum.discussion.find(discussion => discussion.discussionType === type)
     res.render('forum', {type, forum, discussion, user, users})       
-    res.render('forum', {type, forum, discussion, user, users})       
 })
 
 
@@ -551,7 +547,6 @@ app.patch('/updateForumAnswer/:idf/:idd/:ida/:userid/:username', isLoggedIn, asy
         );
         res.redirect('/forum/' + type);
     } catch (err) {
-        console.error('Error:', err)
         console.error('Error:', err)
         res.status(500).send('Internal Server Error')
     }
