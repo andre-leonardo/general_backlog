@@ -4,6 +4,12 @@ var passportLocalMongoose = require("passport-local-mongoose")
 const userSchema = new mongoose.Schema({
     username: String,
     password: String,
+    bio: String,
+    avatar: String,
+    avatarLocal: {
+        buffer: Buffer, 
+        mimetype: String 
+    },
     backlogs: [
         {
             name: {
@@ -27,7 +33,11 @@ const userSchema = new mongoose.Schema({
             },
             type: {
                 type: String
-            }
+            },
+            coverLocal: {
+                buffer: Buffer, 
+                mimetype: String 
+            },
         }
     ],
     customlogs: [

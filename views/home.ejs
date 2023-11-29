@@ -15,10 +15,11 @@
 
     
 <div class="general">
-
+    <img class="logo" src="/img/osrs.gif" alt="">
 <div class="authOptions">
     <% if(isAuthenticated) {%>
         <a href="/logout"><Button>Logout</Button></a><br>
+        <a href="/user/<%= user.id %>">User</a>
     <% }else {%>
         <button onclick="onLogin()">Login</button>
         <button onclick="onRegister()">Register</button>

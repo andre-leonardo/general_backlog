@@ -1,11 +1,14 @@
 <%-include('partials/head')%>
 <a href="/logout"><Button>Logout</Button></a> <button onclick="javascript:history.back()">Go back</button><br>
 <h1><%= type.toUpperCase() %> FORUM</h1>
-<p>
+<p class="rules">
+  !!! <br>
     Rules: <br>
     Discuss the topic of the Forum <br>
     No race theory discussion <br>
-    Do not post anything that would get the federal police involved <br>
+    Do not post anything that would get the federal police involved 
+    or I WILL report you <br>
+  !!! <br>
 </p>
 <button onclick="onAdd()">New discussion</button>
 <div id="overlay" class="add">
@@ -29,8 +32,16 @@
               <tr>
               <% if (log.discussionType === type) { %>
                 <th>
-                  
-                    <p>Post by: <%= log.user.username %></p>
+                  <% users.forEach((use) => { %>
+                    <% if(use.id == log.user.id) {%>
+                      <p>Post by: <a href="/user/<%= log.user.id %>"><%= use.username %></a></p> 
+                      <% if(use.avatarLocal.buffer != null)  {%>
+                        <img class="profilePic" src="data:<%= use.avatarLocal.contentType %>;base64,<%= use.avatarLocal.buffer.toString('base64') %>" alt="">
+                      <% } else if(use.avatar) {%>
+                        <img class="profilePicForum" src="<%= use.avatar %>" alt="">
+                      <% } %>
+                    <% } %>
+                  <% }) %>
                     <h3><%= log.name %></h3><br>
                     <p><%= log.text %></p>
                     <% if(log.img !== "") {%>
@@ -51,7 +62,16 @@
                     <p>Replies:</p><br>
                     <% log.answer.forEach((ans, indexAns) => { %>
                       <div class="answer">
-                        <p>Answer by: <%= ans.user.username %></p>
+                        <% users.forEach((use) => { %>
+                          <% if(use.id == ans.user.id) {%>
+                            <p>Replied by: <a href="/user/<%= ans.user.id %>"><%= use.username %></a><br>
+                              <% if(use.avatarLocal.buffer != null) {%>
+                                <img class="profilePic" src="data:<%= use.avatarLocal.contentType %>;base64,<%= use.avatarLocal.buffer.toString('base64') %>" alt="">
+                              <% } else if(use.avatar) {%>
+                                <img class="profilePicForum" src="<%= use.avatar %>" alt="">
+                              <% } %>
+                          <% } %>
+                        <% }) %>
                         <p><%= ans.text %></p>
                         <% if(ans.img !== "") {%>
                         <img src="<%= ans.img %>" alt="">

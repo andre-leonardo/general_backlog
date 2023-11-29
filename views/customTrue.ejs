@@ -2,7 +2,8 @@
 <a href="/logout"><Button>Logout</Button></a> <button onclick="javascript:history.back()">Go back</button><br>
 
     <form action="/updateCustom/<%= user.id %>/<%= customlog.id %>?_method=PATCH" method="post">
-        <input class="headerCustom" type="text" name="itemName" value="<%= customlog.name %>" id="">
+        <input class="headerCustom" id="resizableInput" type="text" name="itemName" value="<%= customlog.name %>" id="">
+        <input type="text" hidden value="<%= customlog.name  %>" name="itemType">
         <button hidden>save</button>
     </form>
     
@@ -16,7 +17,7 @@
     <div id="overlay" class="add">
         <h1>Add to backlog:</h1>
         <form action="/customTrue/add/<%= user.id %>/<%= customlog.id %>" method="post">
-            <input type="text" placeholder="Name (only item required)" name="itemName">
+            <input type="text" required placeholder="Name (only item required)" name="itemName">
                 <input type="text" placeholder="Cover link" name="itemCover">
                 <input type="text" placeholder="Date" name="itemReleased">
                 <input type="text" hidden value="<%= customlog.name  %>" name="itemType">

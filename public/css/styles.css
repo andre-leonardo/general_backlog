@@ -1,6 +1,3 @@
-h1{
-    color: blue;
-}
 .gold{
     background-color: gold;
 }
@@ -19,14 +16,17 @@ h1{
     font-size:1.3em; padding:.5em;
 }
 
-.headerCustom{
-    width:100%; 
-    height:30px; 
-    font-size:30px;
-    color: blue;
-    border: none transparent;
-    outline: none;
-}
+.headerCustom {
+    width: 100%;
+    height: auto;
+    font-size: 30px;                          
+    color: #00ff00;
+    border: none;                           
+    padding: 0;
+    background: none;
+    outline: none; 
+}    
+
 .general{
     margin:auto;
     width: 50%;
@@ -40,24 +40,31 @@ h1{
 }
 
 .botoes a{
-    background-color: #4CAF50; 
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
+    background-color: #1e1e1e;
+    color: #ffffff;
+    padding: 10px;
+    border: 1px solid #ffffff;
+    cursor: pointer;
     display: inline-block;
-    font-size: 16px;
+    width: 150px;
+    background-color:#00ff00;
+}
+button{
     width: 120px;
 }
 
-.authOptions{
-
-}
 
 img{
     width: 200px; 
     height: 220px; 
+}
+.profilePic{
+    width: 100px;
+    height: 100px;
+}
+.profilePicForum{
+    width: 70px;
+    height: 70px;
 }
 .detail{
     width: 400px; 
@@ -105,6 +112,10 @@ p {
     font-size: 14px;
 }
 
+.rules {
+    color: red;
+}
+
 table {
     border-collapse: collapse;
     width: 100%;
@@ -123,15 +134,7 @@ a {
     text-decoration: none;
 }
 
-button {
-    background-color: #1e1e1e;
-    color: #ffffff;
-    padding: 10px;
-    border: 1px solid #ffffff;
-    cursor: pointer;
-    display: inline-block;
-    width: 120px;
-}
+
 
 button:hover {
     background-color: #ffffff;
@@ -158,4 +161,10 @@ form {
 
 .answer{
     padding-left: 60px;
+}
+
+.logo{
+    float: right;
+    width: 100px;
+    height: 100px;
 }

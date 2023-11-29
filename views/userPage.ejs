@@ -1,0 +1,16 @@
+<%-include('partials/head')%>
+<a href="/logout"><Button>Logout</Button></a> <button onclick="javascript:history.back()">Go back</button><br>
+<%console.log(visitedUser)%>
+<h1>Hi, <%= visitedUser.username %>!</h1>
+<% if (visitedUser.avatarLocal.buffer != null) { %>
+    <img class="profilePic" src="data:<%= visitedUser.avatarLocal.contentType %>;base64,<%= visitedUser.avatarLocal.buffer.toString('base64') %>" alt="">
+<% } else if (visitedUser.avatar != undefined) { %>
+    <img class="profilePic" src="<%= visitedUser.avatar %>" alt="">
+<% } %>
+<p>Bio: </p>
+<p><%= visitedUser.bio %></p>
+
+<% if(user.id == visitedUser.id) {%>
+<a href="/editUser">Edit</a>
+<% } %>
+<%-include('partials/footer')%>
