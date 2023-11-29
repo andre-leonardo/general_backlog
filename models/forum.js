@@ -7,13 +7,16 @@ const forumSchema = new mongoose.Schema({
             name: String,
             text: String,
             img: String,
+            imgLocal: {
+                buffer: Buffer, 
+                mimetype: String 
+            },
             discussionType: String,
             user: {
                 id: {
                     type: mongoose.Schema.Types.ObjectId,
                     ref: 'User'
-                },
-                username: String
+                }
             },
             answer: [
                 {
@@ -23,8 +26,7 @@ const forumSchema = new mongoose.Schema({
                         id: {
                             type: mongoose.Schema.Types.ObjectId,
                             ref: 'User'
-                        },
-                        username: String
+                        }
                     }
                 }
             ]
