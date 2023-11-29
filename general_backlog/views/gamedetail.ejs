@@ -1,0 +1,71 @@
+<%-include('partials/head')%>
+    <a href="/logout">Logout</a><br>
+    <img class="detail" src="<%= backlog.cover  %>" alt="">
+    <div class="detailsgame">
+        <h2><%= backlog.name %></h2>
+        <p><%= backlog.released  %></p>
+        <form action="/update/<%= backlog.id %>?_method=PATCH" method="post"> 
+            <p>Score:</p>
+            <div class="scoreInputs">
+                <% if(backlog.score > 10) {%>
+                    <input class = "gold" type="text" name="score" maxlength="5" size="5" value="<%= backlog.score  %>">
+                <% } else if(backlog.score <=10 && backlog.score >= 7) {%>
+                <input class = "green" type="text" name="score"  maxlength="5" size="5" value="<%= backlog.score  %>">
+                <% } else if(backlog.score < 7 && backlog.score >= 4) {%>
+                    <input class = "yellow" type="text" name="score" maxlength="5" size="5" value="<%= backlog.score  %>">
+                <% } else if(backlog.score < 4) {%>
+                
+                    <input class = "red" type="text" name="score" maxlength="5" size="5" value="<%= backlog.score  %>">
+                <% } else if(backlog.score == null) {%>
+                    <input type="text" name="score" value="<%= backlog.score  %>">
+                <% } else if(backlog.score.trim() === "DS2"){%>
+                    <input class = "gold" type="text" name="score" maxlength="5" size="5" value="<%= backlog.score  %>">
+                <% } else if(typeof backlog.score === 'string' || backlog.score instanceof String) {%>
+                    <input type="text" name="score" maxlength="5" size="5"  value="<%= backlog.score  %>">
+                <% } %>
+                
+                    <button hidden>save</button>
+            </div>
+        </form>
+            <label for="finishStatus">Your progress:</label>
+            <form action="/update/<%= backlog.id %>?_method=PATCH" method="post"> 
+            <select name="finishStatus" id="prog"  onchange="this.form.submit()">
+            <% if(backlog.finishStatus == 1) {%>
+            <option value="1" selected>Unstarted</option>
+            <option value="2">Started</option>
+            <option value="3">Finished</option>
+            <% } else if (backlog.finishStatus == 2) {%>
+                <option value="1" >Unstarted</option>
+                <option value="2" selected>Started</option>
+                <option value="3">Finished</option>
+            <% } else {%>
+                <option value="1" >Unstarted</option>
+                <option value="2" >Started</option>
+                <option value="3" selected>Finished</option>
+            <% } %>>
+            </select> 
+        </form>
+        
+        <div class="bottom" id="showEditGame" hidden>
+            <form action="/update/<%= backlog.id %>?_method=PATCH" method="post"> 
+                <input type="text" name="name" value="<%= backlog.name %>">
+                <input type="text" name="released" value="<%= backlog.released %>">
+                <input type="text" name="cover" value="<%= backlog.cover %>">
+                <textarea name="description" id="" value="<%= backlog.description %>" cols="30" rows="10"><%= backlog.description %></textarea>
+                <button>Save</button>
+            </form>
+            <button id="showEditGame" onclick="toggleVisibility('showEditGame')">Cancel</button>
+        </div>
+        <p>Your thoughts on the <%= backlog.type %>:</p>
+        <p><%= backlog.description %></p>        
+
+        <button id="showEditGame" onclick="toggleVisibility('showEditGame')">ModifyPage</button>
+        <% if(backlog.type === "game") {%>
+        <form action="/delete/<%= backlog.id %>?_method=DELETE" method="post"> 
+        <% }else if(backlog.type === "movie"){ %>
+            <form action="/delete/<%= backlog.id %>?_method=DELETE" method="post"> 
+        <% } %>
+            <button onclick="return confirm('Are you sure?');">Remove game from your backlog</button>
+        </form>
+    </div>
+<%-include('partials/footer')%>

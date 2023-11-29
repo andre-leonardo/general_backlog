@@ -1,0 +1,70 @@
+h1{
+    color: blue;
+}
+.gold{
+    background-color: gold;
+}
+.green{
+    background-color: green;
+}
+.yellow{
+    background-color: yellow;
+}
+.red{
+    background-color: red;
+}
+.scoreInputs input{
+    border: none transparent;
+    outline: none;
+    font-size:1.3em; padding:.5em;
+}
+.general{
+    margin:auto;
+    width: 50%;
+    text-align: left;
+    height: auto;
+    overflow:auto;
+    padding-left: 20px;
+    padding-right: 20px;
+    border: #4CAF50 solid;
+}
+
+.botoes a{
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    width: 120px;
+}
+
+.authOptions{
+
+}
+
+img{
+    width: 200px; 
+    height: 220px; 
+}
+.detail{
+    width: 400px; 
+    height: 440px; 
+    float: left;
+}
+.detailsgame{
+    float: right;
+    text-align: left;
+}
+
+
+table{
+
+}
+
+
+tr{
+    padding: 5,5,5,5;
+}
