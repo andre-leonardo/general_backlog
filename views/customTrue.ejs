@@ -16,11 +16,13 @@
     
     <div id="overlay" class="add">
         <h1>Add to backlog:</h1>
-        <form action="/customTrue/add/<%= user.id %>/<%= customlog.id %>" method="post">
+        <form action="/customTrue/add/<%= user.id %>/<%= customlog.id %>" method="post" enctype="multipart/form-data">
             <input type="text" required placeholder="Name (only item required)" name="itemName">
-                <input type="text" placeholder="Cover link" name="itemCover">
-                <input type="text" placeholder="Date" name="itemReleased">
-                <input type="text" hidden value="<%= customlog.name  %>" name="itemType">
+            <input type="text" placeholder="Date" name="itemReleased">
+            <input type="text" placeholder="Cover link" name="itemCover">
+            <label for="coverLocal">Upload image(if you want to use this make sure that the image link box is empty)</label>
+            <input type="file" name="coverLocal">
+            <input type="text" hidden value="<%= customlog.name  %>" name="itemType">
             <button>Add</button>
         </form>
         <button onclick="offAdd()">Cancel</button>
@@ -34,8 +36,12 @@
             <% user.backlogs.forEach(log => {if(log.type === customlog.name){%>
                 <% if(count % 4 == 0){ %>  <tr></tr> <% } %>
                 <th>
-                    <p><%=log.name%></p>
-                    <a href="/gamedetail/<%=user.id%>/<%= log.id %>/<%= customlog.id %>"><img src="<%= log.cover  %>" alt=""></a>
+                    <a href="/gamedetail/<%=user.id%>/<%= log.id %>/<%= customlog.id %>"><p><%=log.name%></p></a>
+                    <% if(log.coverLocal.buffer != null)  {%>
+                        <a href="/gamedetail/<%=user.id%>/<%= log.id %>/<%= customlog.id %>"><img src="data:<%= log.coverLocal.contentType %>;base64,<%= log.coverLocal.buffer.toString('base64') %>" alt=""></a>
+                    <% } else if(log.cover) {%>
+                        <a href="/gamedetail/<%=user.id%>/<%= log.id %>/<%= customlog.id %>"><img src="<%= log.cover  %>" alt=""></a>
+                    <% } %>
                     <% count++ %>
                 </th>
             <%}}) %>

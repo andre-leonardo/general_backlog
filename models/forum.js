@@ -7,7 +7,7 @@ const forumSchema = new mongoose.Schema({
             name: String,
             text: String,
             img: String,
-            imgLocal: {
+            coverLocal: {
                 buffer: Buffer, 
                 mimetype: String 
             },
@@ -22,6 +22,10 @@ const forumSchema = new mongoose.Schema({
                 {
                     text: String,
                     img: String,
+                    coverLocal: {
+                        buffer: Buffer, 
+                        mimetype: String 
+                    },
                     user: {
                         id: {
                             type: mongoose.Schema.Types.ObjectId,
