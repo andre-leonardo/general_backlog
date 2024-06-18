@@ -19,6 +19,10 @@ const userSchema = new mongoose.Schema({
             cover: {
                 type: String
             },
+            coverLocal: {
+                buffer: Buffer, 
+                mimetype: String 
+            },
             description: {
                 type: String
             },
@@ -33,11 +37,7 @@ const userSchema = new mongoose.Schema({
             },
             type: {
                 type: String
-            },
-            coverLocal: {
-                buffer: Buffer, 
-                mimetype: String 
-            },
+            }
         }
     ],
     customlogs: [

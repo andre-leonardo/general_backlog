@@ -1,6 +1,12 @@
 <%-include('partials/head')%>
 <a href="/logout"><Button>Logout</Button></a> <button onclick="javascript:history.back()">Go back</button><br>
-    <img class="detail" src="<%= backlog.cover  %>" alt="">
+    
+    <% if(backlog.coverLocal != undefined && backlog.coverLocal.buffer != null)  {%>
+        <img class="detail" src="data:<%= backlog.coverLocal.contentType %>;base64,<%= backlog.coverLocal.buffer.toString('base64') %>" alt="">
+    <% } else if(backlog.cover !== "") {%>
+        <img class="detail" src="<%= backlog.cover  %>" alt="">
+    <% } %>
+
     <div class="detailsgame">
         <h2><%= backlog.name %></h2>
         <p><%= backlog.released  %></p>
@@ -55,13 +61,15 @@
         </form>
         <div id="overlay" class="add">
         <% if (customlog) {%>
-            <form action="/update/<%= user.id %>/<%= backlog.id %>/<%= customlog.id %>?_method=PATCH" method="post">
+            <form action="/update/<%= user.id %>/<%= backlog.id %>/<%= customlog.id %>?_method=PATCH" method="post" enctype="multipart/form-data">
         <% } else {%>
-            <form action="/update/<%= user.id %>/<%= backlog.id %>/0?_method=PATCH" method="post">
+            <form action="/update/<%= user.id %>/<%= backlog.id %>/0?_method=PATCH" method="post" enctype="multipart/form-data">
             <% } %>
-                    <input type="text" name="itemName" value="<%= backlog.name %>"><br><br>
-                    <input type="text" name="itemReleased" value="<%= backlog.released %>"><br><br>
-                    <input type="text" name="itemCover" value="<%= backlog.cover %>"><br><br>
+                    <input type="text" name="itemName" placeholder="Name" value="<%= backlog.name %>"><br><br>
+                    <input type="text" name="itemReleased" placeholder="Date" value="<%= backlog.released %>"><br><br>
+                    <input type="text" name="itemCover" placeholder="Image link"><br><br>
+                    <label for="coverLocal">Upload image(if you want to use this make sure that the image link box is empty)</label>
+                    <input type="file" value="<%= backlog.coverLocal %>" name="coverLocal">
                     <textarea name="itemDescription" id="" value="<%= backlog.description %>" cols="30" rows="10"><%= backlog.description %></textarea><br><br>
                     <button>Save</button>
             </form>

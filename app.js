@@ -10,13 +10,13 @@ const expressSession = require('express-session')
 require('dotenv').config()
 const User = require('./models/user')
 const Forum = require('./models/forum')
-const multer = require('multer');
+const multer = require('multer') 
 
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))
 
 app.use(express.static(path.join(__dirname, 'public')))
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true })) 
 
 app.use(expressSession({
     secret: "segredo",
@@ -33,10 +33,10 @@ passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser())
 app.use(methodOverride('_method'))
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const storage = multer.memoryStorage() 
+const upload = multer({ storage: storage }) 
 
-let pass = 0;
+let pass = 0 
 const isLoggedIn = (req, res, next) => {
     if(req.isAuthenticated()){
         pass = 0
@@ -87,8 +87,6 @@ app.get("/user/:id", isLoggedIn, async (req, res) => {
     }catch(err){
         console.log(err)
     }
-    
-    
 })
 
 app.get("/editUser", isLoggedIn, (req,res) => {
@@ -98,26 +96,35 @@ app.get("/editUser", isLoggedIn, (req,res) => {
 
 app.patch("/updateUser", upload.single('avatarLocal'), isLoggedIn, async (req,res) => {
     const user = req.user
-    const {username, password, avatar, bio} = req.body
-    let avatarLocal = req.file; 
+    const {username, avatar, bio} = req.body
+    let avatarLocal = req.file
     if(avatar != ""){
         avatarLocal = null
     }
-        
-    await User.findOneAndUpdate(
-        {_id: user.id}, 
-        {$set: {username: username, password: password, 
-            avatar: avatar, bio: bio, avatarLocal: avatarLocal}},
-        {new: true}
-    )
-    res.redirect('/user/' + user.id)
+    let cont = 0
+    const users = await User.find()
+    users.forEach((use) => {
+        if(use.id != user.id && use.username == username)
+            cont ++
+    })
+    if(cont == 0){
+        await User.findOneAndUpdate(
+            {_id: user.id}, 
+            {$set: {username: username, 
+                avatar: avatar, bio: bio, avatarLocal: avatarLocal}},
+            {new: true}
+        )
+        res.redirect('/user/' + user.id)
+    }else res.send('Username already in use')
+    
 })
+
 
 let resposta = {}
 app.get('/game', isLoggedIn, async(req, res) => {
     const user = req.user
-    let showResult = false;
-    let resposta = null;
+    let showResult = false 
+    let resposta = null 
     res.render('game', {showResult, resposta, user})
 })
 
@@ -144,8 +151,8 @@ app.post('/game', isLoggedIn, async(req, res) => {
 
 app.get('/movie', isLoggedIn, async(req, res) => {
     const user = req.user
-    let showResult = false;
-    let resposta = null;
+    let showResult = false 
+    let resposta = null 
     res.render('movie', {showResult, resposta, user})
 })
 
@@ -159,7 +166,7 @@ app.post('/movie', isLoggedIn, async(req, res) => {
         url: 'https://api.themoviedb.org/3/search/movie?query=' + name +'&api_key=' + movie_api,
         header: 'Authorization: Bearer ' + movie_bearer,
         header: 'accept: application/json'
-    };
+    } 
     request(options, (error, response, body) => {
         if(!error && response.statusCode == 200){
             resposta = JSON.parse(body)
@@ -250,11 +257,16 @@ app.delete('/delete/:idu/:idl/:idc',isLoggedIn, async (req, res) => {
     else res.redirect('/custom/' + idu + '/' + idc)
 })
 
-app.patch('/update/:idu/:idl/:idc', isLoggedIn, async (req, res) => {
+app.patch('/update/:idu/:idl/:idc', upload.single('coverLocal'), isLoggedIn, async (req, res) => {
     const {idu, idl, idc} = req.params
     const user = await User.findById(idu)
     const backlog = user.backlogs.find(backlog => backlog._id.toString() === idl)
     const {itemName, itemCover, itemReleased, itemDescription, score, finishStatus} = req.body
+
+    let coverLocal = req.file
+    if(itemCover != ""){
+        coverLocal = null
+    }
     try{
         await User.updateOne(
             { _id: idu, 'backlogs._id': idl },
@@ -262,10 +274,11 @@ app.patch('/update/:idu/:idl/:idc', isLoggedIn, async (req, res) => {
                 $set: {
                     'backlogs.$.name': itemName,
                     'backlogs.$.cover': itemCover,
+                    'backlogs.$.coverLocal': coverLocal,
                     'backlogs.$.released': itemReleased,
                     'backlogs.$.description': itemDescription,
                     'backlogs.$.score': score,
-                    'backlogs.$.finishStatus': finishStatus,
+                    'backlogs.$.finishStatus': finishStatus
                 },
             }
         )
@@ -283,7 +296,7 @@ app.patch('/update/:idu/:idl/:idc', isLoggedIn, async (req, res) => {
 //dealing with custom backlogs
 app.get('/custom', isLoggedIn, async(req, res) => {
     const user = req.user
-    let showResult = false;
+    let showResult = false 
     res.render('custom', {showResult, user})
 })
 
@@ -314,13 +327,20 @@ app.get('/custom/:idu/:idl', isLoggedIn, async(req, res) => {
     res.render('customTrue', {user, customlog})
 })
 
-app.post('/customTrue/add/:idu/:idl', isLoggedIn, async(req, res) => {
+
+app.post('/customTrue/add/:idu/:idl', upload.single('coverLocal'), isLoggedIn, async(req, res) => {
     try {
     const { itemName, itemCover, itemReleased, itemType } = req.body
     const {idu, idl} = req.params
+
+    let coverLocal = req.file
+    if(itemCover != ""){
+        coverLocal = null
+    }
     const backlogs = {
         name: itemName, 
         cover: itemCover, 
+        coverLocal: coverLocal,
         released: itemReleased,
         finishStatus: 1,
         type: itemType
@@ -368,7 +388,7 @@ app.patch('/updateCustom/:idu/:idl', isLoggedIn, async (req, res) => {
 })
 
 app.delete('/deleteCustomlog/:idu/:idl', isLoggedIn, async (req, res) => {
-    const { idu, idl } = req.params;
+    const { idu, idl } = req.params 
     const {type} = req.body
     try {
         await User.updateOne(
@@ -388,11 +408,11 @@ app.delete('/deleteCustomlog/:idu/:idl', isLoggedIn, async (req, res) => {
             }
         )
     } catch (err) {
-        console.error('Error:', err);
+        console.error('Error:', err) 
     }
 
-    res.redirect('/');
-});
+    res.redirect('/') 
+}) 
 
 
 
@@ -431,14 +451,20 @@ app.get('/forum/:type', isLoggedIn, async (req, res) => {
 
 ///////CREATE A DISCUSSION
 
-app.post('/forum/add/:id', isLoggedIn, async (req, res) => {
+app.post('/forum/add/:id', upload.single('coverLocal'), isLoggedIn, async (req, res) => {
     const {type, itemName, itemText, itemCover} = req.body
     const {id} = req.params
     const user = req.user
+
+    let coverLocal = req.file
+    if(itemCover != ""){
+        coverLocal = null
+    }
     const discuss = {
         name: itemName,
         text: itemText,
         img: itemCover,
+        coverLocal: coverLocal,
         discussionType: type,
         user: {
             id: user.id
@@ -447,7 +473,8 @@ app.post('/forum/add/:id', isLoggedIn, async (req, res) => {
     try{
         await Forum.findOneAndUpdate(
             {_id: id}, 
-            {$addToSet: {discussion: discuss} }
+            {$addToSet: {discussion: discuss} },
+            {new: true}
         )
         res.redirect('/forum/' + type)
     }catch(err) {
@@ -455,9 +482,13 @@ app.post('/forum/add/:id', isLoggedIn, async (req, res) => {
     }
 })
 
-app.patch('/updateForumDiscussion/:idf/:id', isLoggedIn, async (req, res) => {
+app.patch('/updateForumDiscussion/:idf/:id', upload.single('coverLocal'), isLoggedIn, async (req, res) => {
     const {type, itemName, itemText, itemCover} = req.body
     const {idf, id} = req.params
+    let coverLocal = req.file
+    if(itemCover != ""){
+        coverLocal = null
+    }
     try{
         await Forum.findOneAndUpdate(
             { _id: idf, 'discussion._id': id },
@@ -466,6 +497,7 @@ app.patch('/updateForumDiscussion/:idf/:id', isLoggedIn, async (req, res) => {
                     'discussion.$.name': itemName,
                     'discussion.$.img': itemCover,
                     'discussion.$.text': itemText,
+                    'discussion.$.coverLocal': coverLocal
                 },
             }
         )
@@ -496,14 +528,19 @@ app.delete('/deleteForumDiscussion/:type/:idf/:id', isLoggedIn, async (req, res)
 
 ///////CREATE AN ANSWER TO THE DISCUSSION
 
-app.post('/forumAnswer/add/:idf/:id', isLoggedIn, async (req, res) => {
+app.post('/forumAnswer/add/:idf/:id', upload.single('coverLocal'), isLoggedIn, async (req, res) => {
     const {type, itemText, itemCover} = req.body
     const {idf, id} = req.params
     const user = req.user
+    let coverLocal = req.file
+    if(itemCover != ""){
+        coverLocal = null
+    }
     const  answer =  
         {
             text: itemText,
             img: itemCover,
+            coverLocal: coverLocal,
             user: {
                 id: user.id
             }
@@ -524,33 +561,38 @@ app.post('/forumAnswer/add/:idf/:id', isLoggedIn, async (req, res) => {
     }
 })
 
-app.patch('/updateForumAnswer/:idf/:idd/:ida/:userid/:username', isLoggedIn, async (req, res) => {
-    const { type, itemText, itemCover } = req.body;
-    const { idf, idd, ida } = req.params;
+app.patch('/updateForumAnswer/:idf/:idd/:ida/:userid/:username', upload.single('coverLocal'), isLoggedIn, async (req, res) => {
+    const { type, itemText, itemCover } = req.body 
+    const { idf, idd, ida } = req.params 
 
+    let coverLocal = req.file
+    if(itemCover != ""){
+        coverLocal = null
+    }
     const answer = {
         'discussion.$[outer].answer.$[inner].text': itemText,
         'discussion.$[outer].answer.$[inner].img': itemCover,
-    };
+        'discussion.$[outer].answer.$[inner].coverLocal': coverLocal,
+    } 
 
 
     const arrayFilters = [
         { 'outer._id': idd },
         { 'inner._id': ida },
-    ];
+    ] 
 
     try {
         await Forum.findOneAndUpdate(
             {_id: idf, 'discussion._id': idd}, 
             { $set: answer }, 
             { arrayFilters }
-        );
-        res.redirect('/forum/' + type);
+        ) 
+        res.redirect('/forum/' + type) 
     } catch (err) {
         console.error('Error:', err)
         res.status(500).send('Internal Server Error')
     }
-});
+}) 
 app.delete('/deleteForumAnswer/:type/:idf/:idd/:ida', isLoggedIn, async (req, res) => {
     const {idf, idd, ida, type} = req.params
     try{

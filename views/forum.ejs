@@ -12,11 +12,13 @@
 </p>
 <button onclick="onAdd()">New discussion</button>
 <div id="overlay" class="add">
-    <form action="/forum/add/<%= forum.id %>" method="post">
+    <form action="/forum/add/<%= forum.id %>" method="post" enctype="multipart/form-data">
         <input type="text" hidden name="type" value="<%= type %>" id="">
         <input type="text" name="itemName" placeholder="Name of the topic"><br>
         <textarea name="itemText" placeholder="Type your ideas" id="" cols="30" rows="10"></textarea><br>
         <input type="text" name="itemCover" placeholder="Image link"><br>
+        <label for="coverLocal">Upload image(if you want to use this make sure that the image link box is empty)</label>
+        <input type="file" name="coverLocal">
         <button>Create post</button>
     </form>
     <button onclick="offAdd()">Cancel</button>
@@ -44,15 +46,19 @@
                   <% }) %>
                     <h3><%= log.name %></h3><br>
                     <p><%= log.text %></p>
-                    <% if(log.img !== "") {%>
+                    <% if(log.coverLocal.buffer != null)  {%>
+                      <img src="data:<%= log.coverLocal.contentType %>;base64,<%= log.coverLocal.buffer.toString('base64') %>" alt="">
+                    <% } else if(log.img !== "") {%>
                       <img src="<%= log.img %>" alt="">
                     <% } %>
                     <br>
                     <div id="overlay" class="addAnswer">
-                      <form action="/forumAnswer/add/<%= forum.id %>/<%= log.id %>" method="post">
+                      <form action="/forumAnswer/add/<%= forum.id %>/<%= log.id %>" method="post" enctype="multipart/form-data">
                           <textarea name="itemText" id="" cols="30" rows="10"></textarea>
                           <input type="text" name="itemCover">
                           <input type="text" name="type" value="<%= log.discussionType %>" hidden>
+                          <label for="coverLocal">Upload image(if you want to use this make sure that the image link box is empty)</label>
+                          <input type="file" name="coverLocal">
                           <button onclick="offAddAnswer(<%= countans%>)">Reply</button>
                       </form>
                       <button onclick="offAddAnswer(<%= countans%>)">Cancel</button>
@@ -73,15 +79,19 @@
                           <% } %>
                         <% }) %>
                         <p><%= ans.text %></p>
-                        <% if(ans.img !== "") {%>
-                        <img src="<%= ans.img %>" alt="">
+                        <% if(ans.coverLocal.buffer != null)  {%>
+                          <img src="data:<%= ans.coverLocal.contentType %>;base64,<%= ans.coverLocal.buffer.toString('base64') %>" alt="">
+                        <% } else if(ans.img !== "") {%>
+                          <img src="<%= ans.img %>" alt="">
                         <% } %>
                       <% if(ans.user.id == user.id) {%>
                         <div id="overlay" class="editAnswer">
-                          <form action="/updateForumAnswer/<%= forum.id %>/<%= log.id %>/<%= ans.id %>/<%= ans.user.id %>/<%= ans.user.username %>?_method=PATCH" method="post">
-                            <textarea type="text" name="itemText"  value="<%= log.text %>" id=""><%= log.text %></textarea>
-                            <input type="text" name="itemCover"  value="<%= log.img %>" id="">
+                          <form action="/updateForumAnswer/<%= forum.id %>/<%= log.id %>/<%= ans.id %>/<%= ans.user.id %>/<%= user.username %>?_method=PATCH" method="post" enctype="multipart/form-data">
+                            <textarea type="text" name="itemText"  value="<%= ans.text %>" id=""><%= ans.text %></textarea>
+                            <input type="text" name="itemCover"  value="<%= ans.img %>" id="">
                             <input type="text" hidden name="type" value="<%= log.discussionType %>" id="">
+                            <label for="coverLocal">Upload image(if you want to use this make sure that the image link box is empty)</label>
+                            <input type="file" value="<%= ans.coverLocal %>" name="coverLocal">
                             <button onclick="offEditAnswer(<%= countEditAns %>); return confirm('Are you sure?');">Confirm</button>
                           </form>
                           <button onclick="offEditAnswer(<%= countEditAns %>)">Cancel</button>
@@ -98,11 +108,13 @@
                     
                     <% if(log.user.id == user.id) {%> 
                     <div id="overlay" class="editDiscuss">
-                      <form action="/updateForumDiscussion/<%= forum.id %>/<%= log.id %>?_method=PATCH" method="post">
+                      <form action="/updateForumDiscussion/<%= forum.id %>/<%= log.id %>?_method=PATCH" method="post" enctype="multipart/form-data">
                         <input type="text" name="itemName"  value="<%= log.name %>" id="">
-                        <textarea type="text" name="itemText"  value="<%= log.text %>" id=""><%= log.text %></textarea>
-                        <input type="text" name="itemCover"  value="<%= log.img %>" id="">
+                        <textarea type="text" name="itemText" placeholder="update your idea"  value="<%= log.text %>" id=""><%= log.text %></textarea>
+                        <input type="text" name="itemCover" placeholder="image link" value="<%= log.img %>" id="">
                         <input type="text" hidden name="type" value="<%= log.discussionType %>" id="">
+                        <label for="coverLocal">Upload image(if you want to use this make sure that the image link box is empty)</label>
+                        <input type="file" value="<%= log.coverLocal %>" name="coverLocal">
                         <button onclick="offEditDiscuss(<%= count %>); return confirm('Are you sure?');">Confirm</button>
                       </form>
                       <button onclick="offEditDiscuss(<%= count %>)">Cancel</button>
