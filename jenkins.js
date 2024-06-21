@@ -10,18 +10,12 @@ pipeline{
         
         stage('Instal Dependencies'){
             steps{
-                sh 'npm init -y'
                sh 'npm install'
-            }
-        }
-        stage('install pm2'){
-            steps{
-               sh 'npm install pm2 -g'
             }
         }
         stage('Deploy'){
             steps{
-               sh 'pm2 start server.js'
+               sh 'node app.js'
             }
         }
     }
