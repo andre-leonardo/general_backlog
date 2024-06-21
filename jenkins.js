@@ -10,6 +10,7 @@ pipeline{
         
         stage('Instal Dependencies'){
             steps{
+                sh 'npm init -y'
                sh 'npm install'
             }
         }
