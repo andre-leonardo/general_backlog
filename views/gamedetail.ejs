@@ -18,20 +18,20 @@
             <p>Score:</p>
             <div class="scoreInputs">
                 <% if(backlog.score > 10) {%>
-                    <input class = "gold" type="text" name="score" maxlength="5" size="5" value="<%= backlog.score  %>">
+                    <input id="score" class = "gold" type="text" name="score" maxlength="5" size="5" value="<%= backlog.score  %>">
                 <% } else if(backlog.score <=10 && backlog.score >= 7) {%>
-                <input class = "green" type="text" name="score"  maxlength="5" size="5" value="<%= backlog.score  %>">
+                <input id="score" class = "green" type="text" name="score"  maxlength="5" size="5" value="<%= backlog.score  %>">
                 <% } else if(backlog.score < 7 && backlog.score >= 4) {%>
-                    <input class = "yellow" type="text" name="score" maxlength="5" size="5" value="<%= backlog.score  %>">
+                    <input id="score" class = "yellow" type="text" name="score" maxlength="5" size="5" value="<%= backlog.score  %>">
                 <% } else if(backlog.score < 4) {%>
                 
-                    <input class = "red" type="text" name="score" maxlength="5" size="5" value="<%= backlog.score  %>">
+                    <input id="score" class = "red" type="text" name="score" maxlength="5" size="5" value="<%= backlog.score  %>">
                 <% } else if(backlog.score == null) {%>
-                    <input type="text" name="score" value="<%= backlog.score  %>">
+                    <input id="score" type="text" name="score" value="<%= backlog.score  %>">
                 <% } else if(backlog.score.trim() === "DS2"){%>
-                    <input class = "gold" type="text" name="score" maxlength="5" size="5" value="<%= backlog.score  %>">
+                    <input id="score" class = "gold" type="text" name="score" maxlength="5" size="5" value="<%= backlog.score  %>">
                 <% } else if(typeof backlog.score === 'string' || backlog.score instanceof String) {%>
-                    <input type="text" name="score" maxlength="5" size="5"  value="<%= backlog.score  %>">
+                    <input id="score" type="text" name="score" maxlength="5" size="5"  value="<%= backlog.score  %>">
                 <% } %>
                 
                     <button hidden>save</button>
@@ -67,7 +67,7 @@
             <% } %>
                     <input type="text" name="itemName" placeholder="Name" value="<%= backlog.name %>"><br><br>
                     <input type="text" name="itemReleased" placeholder="Date" value="<%= backlog.released %>"><br><br>
-                    <input type="text" name="itemCover" placeholder="Image link"><br><br>
+                    <input type="text" name="itemCover" value="<%= backlog.cover %>" placeholder="Image link"><br><br>
                     <label for="coverLocal">Upload image(if you want to use this make sure that the image link box is empty)</label>
                     <input type="file" value="<%= backlog.coverLocal %>" name="coverLocal">
                     <textarea name="itemDescription" id="" value="<%= backlog.description %>" cols="30" rows="10"><%= backlog.description %></textarea><br><br>
