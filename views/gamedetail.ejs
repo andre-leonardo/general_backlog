@@ -70,15 +70,15 @@
                     <input type="text" name="itemCover" value="<%= backlog.cover %>" placeholder="Image link"><br><br>
                     <label for="coverLocal">Upload image(if you want to use this make sure that the image link box is empty)</label>
                     <input type="file" value="<%= backlog.coverLocal %>" name="coverLocal">
-                    <textarea name="itemDescription" id="" value="<%= backlog.description %>" cols="30" rows="10"><%= backlog.description %></textarea><br><br>
-                    <button>Save</button>
+                    <textarea name="itemDescription" id="itemDescription" value="<%= backlog.description %>" cols="30" rows="10"><%= backlog.description %></textarea><br><br>
+                    <button id="saveModification">Save</button>
             </form>
             <button  onclick="offAdd()">Cancel</button>
         </div>
         <p>Your thoughts on the <%= backlog.type %>:</p>
-        <p><%= backlog.description %></p>        
+        <p id="description"><%= backlog.description %></p>        
 
-        <button onclick="onAdd()">ModifyPage</button>
+        <button id="modify" onclick="onAdd()">ModifyPage</button>
         <% if(backlog.type === "game" || backlog.type === "movie") {%>
         <form action="/delete/<%= user.id %>/<%= backlog.id %>/0?_method=DELETE" method="post"> 
         <% } else if (customlog){%>
